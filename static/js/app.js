@@ -4,6 +4,12 @@ let vidasJug=3;
 const mokepones=["charizar","blastoise","sceptile","picachu","arcanine","golduck"]; //mokepones totalespara elegir
 const elementos={"charizar":"Fuego🔥", "blastoise":"Agua💧","sceptile":"Planta 🌱","picachu":"Rayo✨","arcanine":"Fuego🔥 + Planta🌱","golduck":"Agua💧 + Rayo✨" } //elementos de cada mokepon
 const ataques=["Fuego🔥","Agua💧","Planta🌱","Rayo✨"]; // ataques existentes
+
+let sectionMascota=document.getElementById("seleccionar-mascota");
+
+let sectionAtaques=document.getElementById("seleccionar-ataque");
+let sectionMensaje=document.getElementById("resultado");
+
 let mokeponjug; //guarda el mokepon elegido por el jugador
 let mokeponPc; // guarda el moke elegido porel enemigo
 let ataqueActualJug; // nos dice el ataque elegido del jugador
@@ -25,46 +31,43 @@ botonTierra.addEventListener("click",atackTierra );
 let botonRayo=document.getElementById("boton-rayo")
 botonRayo.addEventListener("click", atackRayo);
 
+let sectionMsj=document.getElementById("mensaje-final");
+
 let botonReiniciar=document.getElementById("boton-reiniciar");
 botonReiniciar.addEventListener("click",reinciar);
 
+let mostrarMokeponJug=document.getElementById("imagen-jugador"); //DIV de  mokepones elegidos por el jugador
+let mostrarMokeponPc=document.getElementById("imagen-pc");//DIV de  mokepones elegidos por el pc
+
 inciarJuego();
 
-function selectMokepon(){
-    let sectionMascota=document.getElementById("seleccionar-mascota");
-    
+function selectMokepon(){        
     for (let e of mokepones){ // ya que es un typo radio, con la propiedad checked revisamos si esta en true o false , recorremos cada opción posible y mostramos la que este true
     if(document.getElementById(e).checked){
         cont=false;
-        mokeponjug=e; 
-        alert(`Has elegido a ${e[0].toUpperCase() + e.substring(1)} \nElementos:  ${elementos[e]}`) 
-        spanMokeJug.innerHTML=e[0].toUpperCase() + e.substring(1); // modificamos el DOM
-        let botonSelectMokepon=document.getElementById("boton-mokepon");
+        mokeponjug=e;         
+        spanMokeJug.innerHTML=e; // modificamos el DOM        
         botonSelectMokepon.disabled=true;
         sectionMascota.style.display="none"// deshabilitamos la secciòn de seleccionar mokepon 
         selectMokeponPc(); // invocamos al enemigo
         return;
     }}
-    if(cont) alert("Debes seleccionar algún Mokepón");               
-    
-   
+    if(cont) alert("Debes seleccionar algún Mokepón");            
 }
 
 function aleatorio(min,max){   // función para sacar numeros aleatorios entre un min y un max
     return Math.floor(Math.random()*(max-min +1) + min)
 }
 
-function selectMokeponPc(){
-    let sectionAtaques=document.getElementById("seleccionar-ataque");
-    sectionAtaques.style.display="flex"// habilitamos la secciòn de seleccion ataque
-    let sectionMensaje=document.getElementById("resultado");
+function selectMokeponPc(){    
+    sectionAtaques.style.display="flex"// habilitamos la secciòn de seleccion ataque    
     sectionMensaje.style.display="block"// habilitamos la secciòn de mensajes
     mokeponPc=mokepones[aleatorio(0,mokepones.length-1)]
-
+    
     imagenMokeponJugadorVs(mokeponjug); //cargamos las imagenes del mokepon por el jugador Vs
     imagenMokeponPcVs(mokeponPc); //cargamos las imagenes del mokepon elegido por la PC Vs
 
-    spanMokePc.innerHTML=mokeponPc[0].toUpperCase() + mokeponPc.substring(1); // modificamos el DOM de la eleccion del pc
+    spanMokePc.innerHTML=mokeponPc; // modificamos el DOM de la eleccion del pc
 }
 
 function atackFuego(){ //ataques jugador
@@ -88,15 +91,11 @@ function atackRayo(){
 }
 
 function atackPc(){ //ataque aleatorio del PC
-ataqueActualPc=ataques[aleatorio(0,ataques.length-1)];
-
-alert(`${mokeponPc[0].toUpperCase() + mokeponPc.substring(1)} te ataca con ${ataqueActualPc}`)
-combate();
-
+    ataqueActualPc=ataques[aleatorio(0,ataques.length-1)];
+    combate();
 }
 
-function combate(){
-        
+function combate(){        
     if(ataqueActualJug==ataques[0] && ataqueActualPc==ataques[1] || ataqueActualJug==ataques[1] && ataqueActualPc==ataques[2] || ataqueActualJug==ataques[3] && ataqueActualPc==ataques[2] || ataqueActualJug==ataques[1] && ataqueActualPc==ataques[3]|| ataqueActualJug==ataques[2] && ataqueActualPc==ataques[0]){
         resulParcial="Tu pierdes😢";
         
@@ -144,30 +143,21 @@ function crearMsj(){
     ataquesDelpc.appendChild(nuevoAtaquePc)
 }
 
-function crearMsjFinal(resultado){
-    let sectionMsj=document.getElementById("mensaje-final");
-
-    let parrafo = document.createElement("h3"); // creamos un H3 en HTML que nos da el mensaje de victoria o derrota dependeindo del combate
+function crearMsjFinal(resultado){    
+    let parrafo = document.createElement("p"); // creamos un H3 en HTML que nos da el mensaje de victoria o derrota dependeindo del combate
     parrafo.innerHTML=resultado;
     sectionMsj.appendChild(parrafo) 
 
-    let botonFuego=document.getElementById("boton-fuego");  // deshabilitar botones
-    botonFuego.disabled=true;    
-    let botonAgua=document.getElementById("boton-agua");
+    // deshabilitar botones de ataques
+    botonFuego.disabled=true;
     botonAgua.disabled=true;
-    let botonTierra=document.getElementById("boton-tierra");
     botonTierra.disabled=true;
-    let botonRayo=document.getElementById("boton-rayo")
     botonRayo.disabled=true;
-
 }
 
-function inciarJuego(){ //para desactivar inicialmente lo que no queremos que se muestre
-    let sectionAtaques=document.getElementById("seleccionar-ataque");
-    sectionAtaques.style.display="none"// deshabilitamos la secciòn de seleccion ataque
-    let sectionMensajes=document.getElementById("resultado");
+function inciarJuego(){ //para desactivar inicialmente lo que no queremos que se muestre    
+    sectionAtaques.style.display="none"// deshabilitamos la secciòn de seleccion ataque   
     sectionMensajes.style.display="none"// deshabilitamos la secciòn de mensajes
-
 }
 
 function reinciar(){
@@ -175,31 +165,26 @@ function reinciar(){
 }
 
 function imagenMokeponJugadorVs(mokepon){ //muestra imagen del mokepon elegido por el jugador
-
     for(e of mokepones){
-        if(mokepon==e){
-            let mostrarMokepon=document.getElementById("imagen-jugador");
+        if(mokepon==e){            
             let imagenMokeponJugador=new Image(280,280); //width, height
             imagenMokeponJugador.src=`./assets/${e}.png`
             console.log(imagenMokeponJugador.src)
-            mostrarMokepon.appendChild(imagenMokeponJugador);                   
+            mostrarMokeponJug.appendChild(imagenMokeponJugador);                   
         }
     } 
-
 }
 
 function imagenMokeponPcVs(mokepon){ //muestra imagen del mokepon elegido por el PC
 
     for(e of mokepones){
-        if(mokepon==e){
-            let mostrarMokepon=document.getElementById("imagen-pc");
+        if(mokepon==e){            
             let imagenMokeponJugador=new Image(280,280); //width, height
             imagenMokeponJugador.src=`./assets/${e}.png`
             console.log(imagenMokeponJugador.src)
-            mostrarMokepon.appendChild(imagenMokeponJugador);                   
+            mostrarMokeponPc.appendChild(imagenMokeponJugador);                   
         }
     } 
-
 }
 
 

@@ -63,10 +63,9 @@ body{
     flex-direction: row-reverse;
 }
 
-.tarjeta-de-mokepon:hover{ /*para cuando seleccionan una tarjeta (imagen de mokepon) */
-    background-color:antiquewhite;
+.tarjeta-de-mokepon:hover{ /*para cuando seleccionan una tarjeta (imagen de mokepon) */    
     cursor: pointer;
-    /* background-image: linear-gradient(225deg, #FF3CAC0%, #784BA050%, #2B86C5100%); */
+    background-image: linear-gradient(225deg, white, gray, blue, black);
     
 } 
 
@@ -79,8 +78,17 @@ input{ /*para que no se vea el circulo de seleccion*/
     display: none;
 }
 
-input:checked + label {
-    background-color:antiquewhite;  
+input:checked + label {     
+    background-image: linear-gradient(225deg, white, gray, blue, black);
+    position: relative;
+    animation: cambiar 4s ease infinite; /*va cambiando de color*/
+    background-size: 200% 200%;
+}
+
+@keyframes cambiar{ /*para la  animaciòn del input + label*/
+    0%{background-position: 0 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position: 0 50%;}
 }
 
 .botones{
@@ -101,7 +109,6 @@ button:hover{
     background-color:aliceblue ;
     cursor: pointer;
 }
-
 
 #seleccionar-ataque{
     display: flex;
@@ -189,14 +196,12 @@ button:hover{
 }
 
 #mensaje-final{
-    font-size: 40px;
+    font-size: 32px;
     font-weight: bold;
-    margin-top: 32px;
-    margin-bottom: 32px;
     background-color: #8f5ab9;
     text-align: center;
-    border-radius: 20px;
-    border:#df2776 2px solid;
+    border-radius: 20px; 
+    margin: 15px;   
 }
 
 @media (max-width:500px){   /*para dispositivos moviles*/
