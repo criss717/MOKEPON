@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOKEPÓN</title>
+    <link rel="stylesheet"  href="./styles.css">
+</head>
+<body>
+       
+    <section id="seleccionar-mascota">
+        <h1 class="titulo" >Mokepón</h1>
+        
+        <h2 class="subtitulo">Elige tu Mokepón: </h2>
+
+        <div class="tarjetas"> 
+            
+            <input type="radio" id="charizar" name="mokepon">
+            <label class="tarjeta-de-mokepon" for="charizar">
+                <p>Charizar</p>
+                <img src="./assets/charizar.png" alt="Charizar">
+            
+            </label> 
+    
+            <input type="radio" id="blastoise" name="mokepon">
+            <label class="tarjeta-de-mokepon" for="blastoise">
+                <p>Blastoise</p>
+                <img src="./assets//blastoise.png" alt=""> 
+                
+            </label> 
+    
+            <input type="radio" id="sceptile" name="mokepon">            
+            <label class="tarjeta-de-mokepon" for="sceptile">
+                <p>Sceptile </p> 
+                <img src="./assets/sceptile.png" alt="">            
+            </label> 
+            
+        </div>
+
+        <div class="tarjetas">
+            <input type="radio" id="picachu" name="mokepon">
+            <label class="tarjeta-de-mokepon" for="picachu">
+                <p>Picachu</p> 
+                <img src="./assets/picachu.png" alt="picachu">
+            </label> 
+            
+            <input type="radio" id="arcanine" name="mokepon">
+            <label class="tarjeta-de-mokepon" for="arcanine">
+                <p>Arcanine </p> 
+                <img src="./assets/arcanine.png" alt="Arcanine">            
+            </label> 
+    
+            <input type="radio" id="golduck" name="mokepon">
+            <label class="tarjeta-de-mokepon" for="golduck">
+                <p>Golduck </p> 
+                <img src="./assets/golduck.png" alt="">
+            </label> 
+        </div>
+
+        <button class="botones" id="boton-mokepon">Seleccionar</button>
+
+    </section>
+
+    <!-- Segunda pantalla -->
+    <section id="seleccionar-ataque">
+        <h1 class="titulo" >Mokepón</h1>
+
+        <section id="imagenes-Vs"> <!-- mostramos los mokepones en duelo-->
+            <div> 
+                <span id="imagen-jugador"></span>     
+            </div>
+
+            <div>
+                <img  id="Vs" src="./assets/vs.png" alt="vs">
+            </div>
+
+            <div> 
+                <span id="imagen-pc" ></span>    
+            </div>
+        </section>
+
+                
+        <h2 class="subtitulo" >Elige tu ataque: </h2>
+
+        <div id="botones-de-ataque">
+            <button class="botones-ataque" id="boton-fuego">Fuego 🔥</button>
+            <button class="botones-ataque" id="boton-agua">Agua 💧</button>
+            <button class="botones-ataque"id="boton-tierra">Planta 🌱</button>
+            <button class="botones-ataque" id="boton-rayo">Rayo ✨</button>
+        </div>
+
+        <div id="pantalla-media">                
+            <section id="mensaje-final">
+            </section>
+
+             <div id="resultado" ></div> <!-- // muestra los resultados parciales de cada duelo        -->
+    
+            <section id="reiniciar">
+                <button class="botones" id="boton-reiniciar">Volver a jugar</button>
+            </section>
+
+        </div>
+
+        <div id="pantalla-inferior">
+                       
+            <h2 class="subtitulo">Historial de combates:</h2>       
+
+            <section id="historial">
+                <div id="ataques-del-jugador" >
+                    <p id="subtitulo2">Tu <span id="mokepon-jugador"></span> <br> vidas: <span id="spanvidas-jugador">3</span> <br> Ataques:</p></p>                    
+                </div>
+                
+                <div id="ataques-del-pc" >
+                    <p id="subtitulo2">El <span id="mokepon-pc"></span> Enemigo <br>vidas: <span id="spanvidas-pc">3</span> <br> Ataques:</p>                    
+                </div>
+            </section>            
+        </div>
+    
+    </section>    
+  
+</body>
+<script src="./static/js/app.js"></script>
+</html>
