@@ -31,13 +31,87 @@ botonTierra.addEventListener("click",atackTierra );
 let botonRayo=document.getElementById("boton-rayo")
 botonRayo.addEventListener("click", atackRayo);
 
-let sectionMsj=document.getElementById("mensaje-final");
+let sectionMsj=document.getElementById("resultado");
+let ataquesDelJugador=document.getElementById("ataques-del-jugador");
+let ataquesDelpc=document.getElementById("ataques-del-pc");
+
+let sectionMsjFinal=document.getElementById("mensaje-final");
 
 let botonReiniciar=document.getElementById("boton-reiniciar");
 botonReiniciar.addEventListener("click",reinciar);
 
 let mostrarMokeponJug=document.getElementById("imagen-jugador"); //DIV de  mokepones elegidos por el jugador
 let mostrarMokeponPc=document.getElementById("imagen-pc");//DIV de  mokepones elegidos por el pc
+
+let mokepons=[];
+let contenedorTarjetas=document.getElementById("contenedor-tarjetas")
+let sectionContenedores=document.getElementById("contenedores");
+
+class Mokepon{    
+    constructor(nombre,foto,vida){
+        this.nombre=nombre;
+        this.foto=foto;
+        this.vida=vida;
+        this.ataque=[];
+    }
+}
+
+let charizar=new Mokepon("charizar",`./assets/charizar.png`,5);
+let blastoise=new Mokepon("blastoise",`./assets/blastoise.png`,5);
+let sceptile=new Mokepon("sceptile",`./assets/sceptile.png`,5);
+let picachu=new Mokepon("picachu",`./assets/picachu.png`,5);
+let arcanine=new Mokepon("arcanine",`./assets/arcanine.png`,5);
+let golduck=new Mokepon("golduck",`./assets/golduck.png`,5);
+
+charizar.ataque.push(
+    {nombre:`🔥`, id:"boton-fuego"},
+    {nombre:`🔥`, id:"boton-fuego"},
+    {nombre:`🔥`, id:"boton-fuego"},
+    {nombre:`🔥`, id:"boton-fuego"},
+    {nombre:`🌱`, id:"boton-tierra"}
+)
+
+blastoise.ataque.push(
+    {nombre:`💧`, id:"boton-agua"},
+    {nombre:`💧`, id:"boton-agua"},
+    {nombre:`💧`, id:"boton-agua"},
+    {nombre:`💧`, id:"boton-agua"},
+    {nombre:`🌱`, id:"boton-tierra"}
+)
+
+sceptile.ataque.push(
+    {nombre:`🌱`, id:"boton-tierra"},
+    {nombre:`🌱`, id:"boton-tierra"},
+    {nombre:`🌱`, id:"boton-tierra"},
+    {nombre:`🌱`, id:"boton-tierra"},
+    {nombre:`✨`, id:"boton-rayo"}
+)
+
+picachu.ataque.push(
+    {nombre:`✨`, id:"boton-rayo"},
+    {nombre:`✨`, id:"boton-rayo"},
+    {nombre:`✨`, id:"boton-rayo"},
+    {nombre:`✨`, id:"boton-rayo"},
+    {nombre:`🌱`, id:"boton-tierra"}
+)
+
+arcanine.ataque.push(
+    {nombre:`🔥`, id:"boton-fuego"},
+    {nombre:`🔥`, id:"boton-fuego"},
+    {nombre:`🔥`, id:"boton-fuego"},
+    {nombre:`🌱`, id:"boton-tierra"},
+    {nombre:`🌱`, id:"boton-tierra"}
+)
+
+golduck.ataque.push(
+    {nombre:`💧`, id:"boton-agua"},
+    {nombre:`💧`, id:"boton-agua"},
+    {nombre:`💧`, id:"boton-agua"},
+    {nombre:`✨`, id:"boton-rayo"},
+    {nombre:`✨`, id:"boton-rayo"}
+)
+
+mokepons.push(charizar,blastoise,sceptile,picachu,arcanine,golduck)
 
 inciarJuego();
 
@@ -125,11 +199,7 @@ function combate(){
    
 }
 
-function crearMsj(){
-    let sectionMsj=document.getElementById("resultado");
-    let ataquesDelJugador=document.getElementById("ataques-del-jugador");
-    let ataquesDelpc=document.getElementById("ataques-del-pc");
-
+function crearMsj(){   
     let notificacion = document.createElement("p"); //creamos los elementos parrafo
     let nuevoAtaqueJugador = document.createElement("p")
     let nuevoAtaquePc = document.createElement("p");
@@ -146,7 +216,7 @@ function crearMsj(){
 function crearMsjFinal(resultado){    
     let parrafo = document.createElement("p"); // creamos un H3 en HTML que nos da el mensaje de victoria o derrota dependeindo del combate
     parrafo.innerHTML=resultado;
-    sectionMsj.appendChild(parrafo) 
+    sectionMsjFinal.appendChild(parrafo) 
 
     // deshabilitar botones de ataques
     botonFuego.disabled=true;
@@ -155,9 +225,29 @@ function crearMsjFinal(resultado){
     botonRayo.disabled=true;
 }
 
-function inciarJuego(){ //para desactivar inicialmente lo que no queremos que se muestre    
-    sectionAtaques.style.display="none"// deshabilitamos la secciòn de seleccion ataque   
-    sectionMensajes.style.display="none"// deshabilitamos la secciòn de mensajes
+function inciarJuego(){ //para desactivar inicialmente lo que no queremos que se muestre y cargar las tarjetas de mokepones en el HTML    
+    sectionAtaques.style.display="none"// deshabilitamos la secciòn de seleccion ataque
+    let contador=0; // para revisar si llevamos 3 mokepones y organizarlos en un Div inferior en pantalla  
+    mokepons.forEach((mokepon,indice) => {
+        let opcionDeMokepones=`
+        <input type="radio" id=${mokepon.nombre} name="mokepon">
+        <label class="tarjeta-de-mokepon" for=${mokepon.nombre} >
+            <p>${mokepon.nombre} </p>
+            <img src=${mokepon.foto}  alt=${mokepon.nombre} >
+        
+        </label>`
+        
+        if((indice+1)%4==0){             
+            contador++;    // para darle un Id diferente a cada DIV         
+            let nuevoDiv=document.createElement("div");
+            nuevoDiv.id=`contenedor-${contador}`;
+            nuevoDiv.className="tarjetas"                       
+            sectionContenedores.appendChild(nuevoDiv)
+            contenedorTarjetas=document.getElementById(`contenedor-${contador}`)
+            contenedorTarjetas.innerHTML+=opcionDeMokepones;     
+        } else contenedorTarjetas.innerHTML+=opcionDeMokepones;
+            
+    })     
 }
 
 function reinciar(){
@@ -176,7 +266,6 @@ function imagenMokeponJugadorVs(mokepon){ //muestra imagen del mokepon elegido p
 }
 
 function imagenMokeponPcVs(mokepon){ //muestra imagen del mokepon elegido por el PC
-
     for(e of mokepones){
         if(mokepon==e){            
             let imagenMokeponJugador=new Image(280,280); //width, height
