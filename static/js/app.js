@@ -1,8 +1,7 @@
 let cont=true; // nos sirve para saber si el usuario ha elegido alguna opciòn ver linea 7
 let vidasPC=3;
 let vidasJug=3;
-// const mokepones=["charizar","blastoise","sceptile","picachu","arcanine","golduck"]; //mokepones totalespara elegir
-let ataquess=["Fuego🔥","Agua💧","Planta🌱","Rayo✨"]; // ataques existentes de todos los mokepones
+
 let ataquesTotales;
 let sectionMascota=document.getElementById("seleccionar-mascota");
 
@@ -11,8 +10,8 @@ let sectionMensaje=document.getElementById("resultado");
 
 let mokeponjug; //guarda el mokepon elegido por el jugador
 let mokeponPc; // guarda el moke elegido porel enemigo
-let ataqueActualJug; // nos dice el ataque elegido del jugador
-let ataqueActualPc; // nos dice el ataque elegido del pc
+let ataqueActualJug; // almacena el ataque correponsdiente a cada indice del array de la secuencia del jug
+let ataqueActualPc; // almacena el ataque correponsdiente a cada indice del array de la secuencia del pc
 let resulParcial;//guarda el resultado de cada enfrentamiento de cada combate
 let spanMokeJug=document.getElementById("mokepon-jugador"); // para modificar el DOM
 let spanMokePc=document.getElementById("mokepon-pc");
@@ -35,6 +34,9 @@ let sectionMsjFinal=document.getElementById("mensaje-final");
 let botonReiniciar=document.getElementById("boton-reiniciar");
 botonReiniciar.addEventListener("click",reinciar);
 
+let botonSigRonda=document.getElementById("boton-sig-ronda");
+botonSigRonda.addEventListener("click",siguienteRonda)
+
 let mostrarMokeponJug=document.getElementById("imagen-jugador"); //DIV de  mokepones elegidos por el jugador
 let mostrarMokeponPc=document.getElementById("imagen-pc");//DIV de  mokepones elegidos por el pc
 
@@ -43,7 +45,7 @@ let contenedorTarjetas=document.getElementById("contenedor-tarjetas")
 let sectionContenedores=document.getElementById("contenedores");
 let ataquesJug;
 let ataquesPc;
-let botones={};
+let botonesAtaques={};
 let secuenciaAtaqueJug=[];  //secuencia Jug
 let secuenciaAtaquePc=[];  //secuencia Pc
 let contadorPuntosJug=0;    //para el combate
@@ -176,7 +178,7 @@ function extraerAtaquesJug(){ // para guardar en la variable ataquesJug los ataq
         idAtaquesJug.push(ataque.id)
     });
     
-    botones=document.querySelectorAll(".BDeataque");
+    botonesAtaques=document.querySelectorAll(".BDeataque");
     // cuando hacen click en los botones de ataque 
     if(idAtaquesJug.indexOf("boton-fuego")>=0) { // si nuestro mokepon tiene este ataque enntra el If
         botonFuego=document.getElementById("boton-fuego");  
@@ -214,31 +216,31 @@ function extraerAtaquesPc(){ // para guardar en la variable ataquesPc los ataque
 
 function secuenciaAtaque(){ //secuencia de ataques del jugador
     secuenciaDeAtaquePc();
-    let contadorClicks=0; // cuando llega a 5 significa que ya uso los 5 botones y podemos invocar el combate
-    botones.forEach((boton) => {
-        boton.addEventListener("click", (e) => {
+   
+    botonesAtaques.forEach((boton) => {
+        boton.addEventListener("click", (e) => {           
             if(e.target.textContent=="🔥"){
                 secuenciaAtaqueJug.push("fuego")
-                boton.style.background="#1D3E65";
+                boton.style.background="#1D3E65";                
                 boton.disabled=true;                
-                contadorClicks++;               
+                               
             } else if(e.target.textContent=="💧"){
                 secuenciaAtaqueJug.push("agua")
                 boton.style.background="#1D3E65"; 
                 boton.disabled=true;
-                contadorClicks++;
+                
             } else if(e.target.textContent=="🌱"){
                 secuenciaAtaqueJug.push("planta")
                 boton.style.background="#1D3E65";
                 boton.disabled=true;
-                contadorClicks++; 
+                 
             }else if(e.target.textContent=="✨"){
                 secuenciaAtaqueJug.push("rayo")
                 boton.style.background="#1D3E65";
                 boton.disabled=true;
-                contadorClicks++; 
+                 
             }
-            if(contadorClicks==5)  combate();   
+            if(secuenciaAtaqueJug.length==5)  combate();   //inicia el combate cuando  el Jug temina de elegir su secuencia de ataques
         })
     });
 }
@@ -259,6 +261,7 @@ function combate(){
     // 1 pto para el que gane cada duelo 
 
     for(i=0; i<secuenciaAtaqueJug.length; i++){
+        ataquesEnfrentados(i,i); // para extraer los ataques de jug y pc enfrentados en cada ronda
         if(secuenciaAtaqueJug[i]==ataquesTotales[0] && secuenciaAtaquePc[i]==ataquesTotales[2] || secuenciaAtaqueJug[i]==ataquesTotales[2] && secuenciaAtaquePc[i]==ataquesTotales[1] || secuenciaAtaqueJug[i]==ataquesTotales[3] && secuenciaAtaquePc[i]==ataquesTotales[1] || secuenciaAtaqueJug[i]==ataquesTotales[2] && secuenciaAtaquePc[i]==ataquesTotales[3]|| secuenciaAtaqueJug[i]==ataquesTotales[1] && secuenciaAtaquePc[i]==ataquesTotales[0]){
             console.log(`Tu pierdes😢, turno ${i+1}`);
             contadorPuntosPc++;            
@@ -271,54 +274,72 @@ function combate(){
             console.log(`Tu ganas, turno ${i+1}`);
             contadorPuntosJug++;
         }
+        crearMsj1();
     }  
     contadorDepuntos(); 
 }
 
 function contadorDepuntos(){
+    let turno=0; //para mostrar en pantalla el turno que va
     if(contadorPuntosJug>contadorPuntosPc){
-        resulParcial=`Tu Ganas`;
-        spanvidasJug.innerHTML=Number(spanvidasJug.innerText)-1;    
+        turno++;
+        resulParcial=`Ronda: ${turno}, Tu Ganas`;
+        spanvidasPc.innerHTML=Number(spanvidasPc.innerText)-1;    
          //modifica el DOM con el nuevo numero de vidas del jug
-        vidasJug=Number(spanvidasJug.innerText);
+        vidasJug=Number(spanvidasPc.innerText);
         if(vidasJug==0) {
             let mensaje=`GAME OVER! EL ${mokeponPc} ENEMIGO ES UN DIOS `
             crearMsjFinal(mensaje)        
       
         }
     } else if(contadorPuntosJug==contadorPuntosPc){
-        resulParcial=`Es un empate`;
+        turno++;
+        resulParcial=`Ronda: ${turno}, Es un empate`;
         
     } else {
-        resulParcial=`Tu pierdes`;
-        spanvidasPc.innerHTML=Number(spanvidasPc.innerText)-1; //modifica el DOM con el nuevo numero de vidas del PC
-        vidasPC=Number(spanvidasPc.innerText);
+        turno++;
+        resulParcial=`Ronda: ${turno},Tu pierdes`;
+        spanvidasJug.innerHTML=Number(spanvidasJug.innerText)-1; //modifica el DOM con el nuevo numero de vidas del PC
+        vidasPC=Number(spanvidasJug.innerText);
         if(vidasPC==0) {
             let mensaje=`TU ${mokeponjug} HA GANADO EL DUELO!!!🥳🎉🥳`
             crearMsjFinal(mensaje)                          
         }
     }      
-    crearMsj();
+    crearMsj2();
 }
 
-function crearMsj(){   
-    let notificacion = document.createElement("p"); //creamos los elementos parrafo
-    let nuevoAtaqueJugador = document.createElement("p")
-    let nuevoAtaquePc = document.createElement("p");
+function ataquesEnfrentados(indiceJug,indicePc){ // para guardar en variables cada Vs de los ataques enfrentados cada ronda
+    ataqueActualJug=secuenciaAtaqueJug[indiceJug];
+    ataqueActualPc=secuenciaAtaquePc[indicePc];
+}
 
-    notificacion.innerHTML=resulParcial; //agregamos texto a los parrafos
-    nuevoAtaqueJugador.innerHTML=ataqueActualJug;
+function crearMsj1(){    //mensaje inferior de la pantalla
+    let nuevoAtaqueJugador = document.createElement("p")//creamos los elementos parrafo
+    let nuevoAtaquePc = document.createElement("p");
+    
+    nuevoAtaqueJugador.innerHTML=ataqueActualJug;//agregamos texto a los parrafos
     nuevoAtaquePc.innerHTML=ataqueActualPc;
     
-    sectionMsj.appendChild(notificacion) //los cargamos en el HTML
-    ataquesDelJugador.appendChild(nuevoAtaqueJugador)
+    ataquesDelJugador.appendChild(nuevoAtaqueJugador)//los cargamos en el HTML
     ataquesDelpc.appendChild(nuevoAtaquePc)
 }
 
-function crearMsjFinal(resultado){    
+function crearMsj2(){  //mensaje superior de si ganamos o perdimos la ronda
+    let notificacion = document.createElement("p"); //creamos los elementos parrafo
+    
+    notificacion.innerHTML=resulParcial; //agregamos texto a los parrafos
+
+    sectionMsj.appendChild(notificacion) //los cargamos en el HTML
+}
+
+function crearMsjFinal(resultado){    //resultado final
     let parrafo = document.createElement("p"); // creamos un H3 en HTML que nos da el mensaje de victoria o derrota dependeindo del combate
     parrafo.innerHTML=resultado;
     sectionMsjFinal.appendChild(parrafo) 
+
+    //deshabilitar boton de siguiente ronda
+    botonSigRonda.disabled=true;
 
     // deshabilitar botones de ataques
     if(idAtaquesJug.indexOf("boton-fuego")>=0) { // si nuestro mokepon tiene este ataque enntra el If
@@ -366,6 +387,18 @@ function inciarJuego(){ //para desactivar inicialmente lo que no queremos que se
 
 function reinciar(){
     location.reload();
+}
+
+function siguienteRonda(){
+    secuenciaAtaqueJug=[];
+    secuenciaAtaquePc=[];
+    extraerAtaquesPc() // se debe llamar porque el split le borra el contenido a la hora de elegir 
+    secuenciaDeAtaquePc(); // el pc vuelve a elegir secuencia
+    botonesAtaques.forEach(boton =>{
+        boton.disabled=false;
+        boton.style.backgroundColor="white";
+    })
+    
 }
 
 function imagenMokeponJugadorVs(mokepon){ //muestra imagen del mokepon elegido por el jugador
