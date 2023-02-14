@@ -40,6 +40,12 @@ botonSigRonda.addEventListener("click",siguienteRonda)
 let mostrarMokeponJug=document.getElementById("imagen-jugador"); //DIV de  mokepones elegidos por el jugador
 let mostrarMokeponPc=document.getElementById("imagen-pc");//DIV de  mokepones elegidos por el pc
 
+const sectionVerMapa=document.getElementById("ver-mapa");
+const mapa=document.getElementById("mapa")
+let lienzo=mapa.getContext("2d")
+let mapaBackground= new Image();
+mapaBackground.src="./assets/mokemap.png"
+
 let mokepons=[];//aqui se almacenan los mokepones totales para elegir
 let contenedorTarjetas=document.getElementById("contenedor-tarjetas")
 let sectionContenedores=document.getElementById("contenedores");
@@ -50,6 +56,8 @@ let secuenciaAtaqueJug=[];  //secuencia Jug
 let secuenciaAtaquePc=[];  //secuencia Pc
 let contadorPuntosJug=0;    //para el combate
 let contadorPuntosPc=0;
+let objetoMokeponJug; //guarda el objeto "mascota" elegido por el JUG
+let objetoMokeponPc; //guarda el objeto "mascota" elegido por el pc
 
 class Mokepon{    
     constructor(nombre,foto,vida){
@@ -57,6 +65,14 @@ class Mokepon{
         this.foto=foto;
         this.vida=vida;
         this.ataques=[];
+        this.x=20; // coordenadas para aparecer la imagen y poder mover
+        this.y=30;
+        this.ancho=150;
+        this.alto=100;
+        this.mapaFoto=new Image()
+        this.mapaFoto.src=foto;
+        this.velocidadX=0;
+        this.velocidadY=0;
     }
 }
 
@@ -131,36 +147,43 @@ function extraerAtaquesTot(){ // para tener en un array los ataques totales del 
 
 inciarJuego();
 
-function selectMokepon(){        
+function selectMokepon(){    
+       
     for (let e of mokepons){ // ya que es un typo radio, con la propiedad checked revisamos si esta en true o false , recorremos cada opción posible y mostramos la que este true
-    if(document.getElementById(e.nombre).checked){
-        cont=false;
-        mokeponjug=e.nombre;         
-        spanMokeJug.innerHTML=e.nombre; // modificamos el DOM        
-        botonSelectMokepon.disabled=true;
-        sectionMascota.style.display="none"// deshabilitamos la secciòn de seleccionar mokepon 
-        selectMokeponPc(); // invocamos al enemigo
-        return;
+        objetoMokeponJug=e; //guardamos el objeto completo del mokepon elegido
+        if(document.getElementById(e.nombre).checked){
+            cont=false;
+            mokeponjug=e.nombre;         
+            spanMokeJug.innerHTML=e.nombre; // modificamos el DOM        
+            botonSelectMokepon.disabled=true;
+            sectionMascota.style.display="none"// deshabilitamos la secciòn de seleccionar mokepon 
+            selectMokeponPc(); // invocamos al enemigo
+            return;
     }}
-    if(cont) alert("Debes seleccionar algún Mokepón");            
+    if(cont) alert("Debes seleccionar algún Mokepón");              
 }
 
 function aleatorio(min,max){   // función para sacar numeros aleatorios entre un min y un max
     return Math.floor(Math.random()*(max-min +1) + min)
 }
 
-function selectMokeponPc(){    
-    sectionAtaques.style.display="flex"// habilitamos la secciòn de seleccion ataque    
+function selectMokeponPc(){ 
+    // sectionAtaques.style.display="flex"// habilitamos la secciòn de seleccion ataque    
+    sectionVerMapa.style.display="flex";
+    iniciarMapa();
+    let indiceAleatorio=aleatorio(0,mokepons.length-1)      
     sectionMensaje.style.display="block"// habilitamos la secciòn de mensajes
-    mokeponPc=mokepons[aleatorio(0,mokepons.length-1)].nombre
+    mokeponPc=mokepons[indiceAleatorio].nombre
+    objetoMokeponPc=mokepons[indiceAleatorio]
     
-    imagenMokeponJugadorVs(mokeponjug); //cargamos las imagenes del mokepon por el jugador Vs
-    imagenMokeponPcVs(mokeponPc); //cargamos las imagenes del mokepon elegido por la PC Vs
+    imagenMokeponJugadorVs(); //cargamos las imagenes del mokepon por el jugador Vs
+    imagenMokeponPcVs(); //cargamos las imagenes del mokepon elegido por la PC Vs
 
     spanMokePc.innerHTML=mokeponPc; // modificamos el DOM de la eleccion del pc
     extraerAtaquesJug();
     extraerAtaquesPc();
     secuenciaAtaque();
+     
 }
 
 let idAtaquesJug=[] // guardo los id (id de los botones) de los ataques del mokepone elegido por el jugador
@@ -361,6 +384,7 @@ function crearMsjFinal(resultado){    //resultado final
 
 function inciarJuego(){ //para desactivar inicialmente lo que no queremos que se muestre y cargar las tarjetas de mokepones en el HTML    
     sectionAtaques.style.display="none"// deshabilitamos la secciòn de seleccion ataque
+    sectionVerMapa.style.display="none"  // deshabilitamos el mapa
     let contador=0; // para revisar si llevamos 3 mokepones y organizarlos en un Div inferior en pantalla  
     mokepons.forEach((mokepon,indice) => {
         let opcionDeMokepones=`
@@ -401,30 +425,96 @@ function siguienteRonda(){
     
 }
 
-function imagenMokeponJugadorVs(mokepon){ //muestra imagen del mokepon elegido por el jugador
-    for(e of mokepons){
-        if(mokepon==e.nombre){            
-            let imagenMokeponJugador=new Image(280,280); //width, height
-            imagenMokeponJugador.src=`./assets/${e.nombre}.png`
-            console.log(imagenMokeponJugador.src)
-            mostrarMokeponJug.appendChild(imagenMokeponJugador);                   
-        }
-    } 
+function imagenMokeponJugadorVs(){ //muestra imagen del mokepon elegido por el jugador                    
+    let imagenMokeponJugador=new Image(280,280); //width, height
+    imagenMokeponJugador.src=`./assets/${objetoMokeponJug.nombre}.png`            
+    mostrarMokeponJug.appendChild(imagenMokeponJugador);                 
+     
 }
 
-function imagenMokeponPcVs(mokepon){ //muestra imagen del mokepon elegido por el PC
-    for(e of mokepons){
-        if(mokepon==e.nombre){            
-            let imagenMokeponJugador=new Image(280,280); //width, height
-            imagenMokeponJugador.src=`./assets/${e.nombre}.png`
-            console.log(imagenMokeponJugador.src)
-            mostrarMokeponPc.appendChild(imagenMokeponJugador);                   
-        }
-    } 
+function imagenMokeponPcVs(){ //muestra imagen del mokepon elegido por el PC             
+    let imagenMokeponPc=new Image(280,280); //width, height
+    imagenMokeponPc.src=`./assets/${objetoMokeponPc.nombre}.png`           
+    mostrarMokeponPc.appendChild(imagenMokeponPc);         
 }
 
+let intervalo; //interval sirve para llamar una funcion varias veces de forma continua en intervalos de tiempo
 
-      
+function pintarCanvas(){ 
+    objetoMokeponJug.x+=objetoMokeponJug.velocidadX;
+    objetoMokeponJug.y+=objetoMokeponJug.velocidadY;
+    lienzo.clearRect(0, 0, mapa.width,mapa.height)  
+    lienzo.drawImage(
+        mapaBackground,
+        0,
+        0,
+        mapa.width,
+        mapa.height
+    )
+         
+    lienzo.drawImage(
+        objetoMokeponJug.mapaFoto,
+        objetoMokeponJug.x,
+        objetoMokeponJug.y,
+        objetoMokeponJug.ancho,
+        objetoMokeponJug.alto
+    )
+}  
 
+let botonesMov={} 
 
+function moverMokepon(){    
 
+    botonesMov=document.querySelectorAll(".bMov"); // guardamos en variable todos los elementos de la clase bptpmes de movimiento
+    botonesMov.forEach((boton) => {        
+        boton.addEventListener("mousedown", (e) => {                     
+            if(e.target.textContent=="Arriba" || e.key=="ArrowUp"){                
+                objetoMokeponJug.velocidadY-=5                
+            }
+            if(e.target.textContent=="Abajo" || e.key=="ArrowDown"){
+                objetoMokeponJug.velocidadY+=5                
+            }
+            if(e.target.textContent=="Izquierda" || e.key=="ArrowLeft"){
+                objetoMokeponJug.velocidadX-=5                
+            }
+            if(e.target.textContent=="Derecha" || e.key=="ArrowRight"){
+                objetoMokeponJug.velocidadX+=5                
+            }
+        })
+    } )        
+    
+}
+
+function detenerMov(){
+    objetoMokeponJug.velocidadX=0;
+    objetoMokeponJug.velocidadY=0;
+}
+   
+function presionandoTeclado(event){ // todos los eventlistener devuelven el evento de lo presionado
+    switch (event.key) {
+        case "ArrowUp":
+            objetoMokeponJug.velocidadY-=5             
+            break;
+        case "ArrowDown":
+            objetoMokeponJug.velocidadY+=5             
+            break;
+        case "ArrowLeft":
+            objetoMokeponJug.velocidadX-=5             
+            break;
+        case "ArrowRight":
+            objetoMokeponJug.velocidadX+=5             
+        break;
+        default:
+            break;
+    }
+
+}
+
+function iniciarMapa(){
+    mapa.width=800
+    mapa.height=600
+    intervalo=setInterval(pintarCanvas,50) // para que nuestro canvas se este actualizando ocnstantemente y asi ver el movimiento, llama casa 50 ms la funcion pintarNokepon
+    moverMokepon(); 
+    window.addEventListener("keydown", presionandoTeclado) // deja presionada un atecla
+    window.addEventListener("keyup", detenerMov)    // deja de presionarla
+}

@@ -205,6 +205,24 @@ button:hover{
     margin: 15px;   
 }
 
+#botones-movimiento{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#ver-mapa{
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#mapa{
+    height: 700px;
+    width: 1200px;
+    border: #58287F solid;
+}
+
 @media (max-width:500px){   /*para dispositivos moviles*/
     
     .titulo{
