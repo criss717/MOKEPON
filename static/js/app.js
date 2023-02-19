@@ -59,7 +59,7 @@ let contadorPuntosPc=0;
 let objetoMokeponJug; //guarda el objeto "mascota" elegido por el JUG
 let objetoMokeponPc; //guarda el objeto "mascota" elegido por el pc
 
-class Mokepon{    
+class Mokepon{
     constructor(nombre,foto,vida,x=35,y=420){
         this.nombre=nombre;
         this.foto=foto;
@@ -75,7 +75,7 @@ class Mokepon{
         this.velocidadY=0;
     }
 
-    pintarMokeponJug(){ //metodo para pintar el mokepon en el canvas             
+    pintarMokeponJug(){ //metodo para pintar el mokepon en el canvas
         lienzo.drawImage(
             this.mapaFoto,
             this.x,
@@ -85,7 +85,7 @@ class Mokepon{
         )
     }
 
-    pintarMokeponPc(){ //metodo para pintar el mokepon del enemigo en el canvas             
+    pintarMokeponPc(){ //metodo para pintar el mokepon del enemigo en el canvas
         lienzo.drawImage(
             this.mapaFoto,
             this.x,
@@ -94,7 +94,7 @@ class Mokepon{
             this.alto
         )
     }
-    
+
 }
 
 let charizar=new Mokepon("charizar",`./assets/charizar.png`,5);
@@ -104,12 +104,15 @@ let picachu=new Mokepon("picachu",`./assets/picachu.png`,5);
 let arcanine=new Mokepon("arcanine",`./assets/arcanine.png`,5);
 let golduck=new Mokepon("golduck",`./assets/golduck.png`,5);
 
+let conjuntoEnemigosMapa=[];
 let charizarPc=new Mokepon("charizar",`./assets/charizar.png`,5,580,30); // enemigos para ver en el mapa
 let blastoisePc=new Mokepon("blastoise",`./assets/blastoise.png`,5,580,100);
 let sceptilePc=new Mokepon("sceptile",`./assets/sceptile.png`,5,580,200);
 let picachuPc=new Mokepon("picachu",`./assets/picachu.png`,5,400,30);
 let arcaninePc=new Mokepon("arcanine",`./assets/arcanine.png`,5,400,100);
 let golduckPc=new Mokepon("golduck",`./assets/golduck.png`,5,400,200);
+conjuntoEnemigosMapa.push(charizarPc,blastoisePc,sceptilePc,picachuPc,arcaninePc,golduckPc)
+
 
 charizar.ataques.push(
     {nombre:`🔥`, id:"boton-fuego"},
@@ -174,38 +177,38 @@ function extraerAtaquesTot(){ // para tener en un array los ataques totales del 
 
 inciarJuego();
 
-function selectMokepon(){    
-       
+function selectMokepon(){
+
     for (let e of mokepons){ // ya que es un typo radio, con la propiedad checked revisamos si esta en true o false , recorremos cada opción posible y mostramos la que este true
         objetoMokeponJug=e; //guardamos el objeto completo del mokepon elegido
         if(document.getElementById(e.nombre).checked){
             cont=false;
-            mokeponjug=e.nombre;         
-            spanMokeJug.innerHTML=e.nombre; // modificamos el DOM        
+            mokeponjug=e.nombre;
+            spanMokeJug.innerHTML=e.nombre; // modificamos el DOM
             botonSelectMokepon.disabled=true;
-            sectionMascota.style.display="none"// deshabilitamos la secciòn de seleccionar mokepon 
+            sectionMascota.style.display="none"// deshabilitamos la secciòn de seleccionar mokepon
             selectMokeponPc(); // invocamos al enemigo
             return;
     }}
-    if(cont) alert("Debes seleccionar algún Mokepón");              
+    if(cont) alert("Debes seleccionar algún Mokepón");
 }
 
 function aleatorio(min,max){   // función para sacar numeros aleatorios entre un min y un max
     return Math.floor(Math.random()*(max-min +1) + min)
 }
 
-function selectMokeponPc(mokepon){  
+function selectMokeponPc(mokepon){
     if(mokepon==undefined){
         sectionVerMapa.style.display="flex";
         iniciarMapa();
-        // let indiceAleatorio=aleatorio(0,mokepons.length-1)      
+        // let indiceAleatorio=aleatorio(0,mokepons.length-1)
         // sectionMensaje.style.display="block"// habilitamos la secciòn de mensajes
         // mokeponPc=mokepons[indiceAleatorio].nombre
         // objetoMokeponPc=mokepons[indiceAleatorio]
-        
+
         // imagenMokeponJugadorVs(); //cargamos las imagenes del mokepon por el jugador Vs
         // imagenMokeponPcVs(); //cargamos las imagenes del mokepon elegido por la PC Vs
-    
+
         // spanMokePc.innerHTML=mokeponPc; // modificamos el DOM de la eleccion del pc
         // extraerAtaquesJug();
         // extraerAtaquesPc();
@@ -214,16 +217,16 @@ function selectMokeponPc(mokepon){
         sectionMensaje.style.display="block"// habilitamos la secciòn de mensajes
         mokeponPc=mokepon.nombre;
         objetoMokeponPc=mokepon
-        
+
         imagenMokeponJugadorVs(); //cargamos las imagenes del mokepon por el jugador Vs
         imagenMokeponPcVs(); //cargamos las imagenes del mokepon elegido por la PC Vs
-    
+
         spanMokePc.innerHTML=mokeponPc; // modificamos el DOM de la eleccion del pc
         extraerAtaquesJug();
         extraerAtaquesPc();
         secuenciaAtaque();
-    }   
-     
+    }
+
 }
 
 let idAtaquesJug=[] // guardo los id (id de los botones) de los ataques del mokepone elegido por el jugador
@@ -231,20 +234,20 @@ let arrayAtaquesPc=[] // guardo los id (nombres) de los ataques del mokepone ele
 
 function extraerAtaquesJug(){ // para guardar en la variable ataquesJug los ataques que corresponden al mokepon elegido por el jug  y mostrar en HTML los botones de ataque
     for(e of mokepons ){
-        if(mokeponjug==e.nombre) ataquesJug=e.ataques;        
+        if(mokeponjug==e.nombre) ataquesJug=e.ataques;
     }
-    
+
     ataquesJug.forEach(ataque=> {
         let opcionesDeAtaques=`<button class="botones-ataque BDeataque" id=${ataque.id}>${ataque.nombre}</button>`;
         let botonesDeAtaques=document.getElementById("botones-de-ataque");
-        botonesDeAtaques.innerHTML+=opcionesDeAtaques;  
+        botonesDeAtaques.innerHTML+=opcionesDeAtaques;
         idAtaquesJug.push(ataque.id)
     });
-    
+
     botonesAtaques=document.querySelectorAll(".BDeataque");
-    // cuando hacen click en los botones de ataque 
+    // cuando hacen click en los botones de ataque
     if(idAtaquesJug.indexOf("boton-fuego")>=0) { // si nuestro mokepon tiene este ataque enntra el If
-        botonFuego=document.getElementById("boton-fuego");  
+        botonFuego=document.getElementById("boton-fuego");
         // botonFuego.addEventListener("click", atackFuego );
     }
 
@@ -263,14 +266,14 @@ function extraerAtaquesJug(){ // para guardar en la variable ataquesJug los ataq
         // botonRayo.addEventListener("click", atackRayo);
     }
 }
-   
+
 function extraerAtaquesPc(){ // para guardar en la variable ataquesPc los ataques que corresponden al mokepon elegido por el pc
     for(e of mokepons ){
-        if(mokeponPc==e.nombre) { 
-        ataquesPc=e.ataques;         
-    }      
+        if(mokeponPc==e.nombre) {
+        ataquesPc=e.ataques;
     }
-    
+    }
+
     for(ataque of ataquesPc){ //guardo en la variable los nombres de los ataques del mokepon del pc
         arrayAtaquesPc.push(ataque.id.split("boton-").slice(1).join()); // guardamos solo el nombre del ataque, quitando el texto "boton-" ya que el id viene "boton-fuego" por ejemplo.
 
@@ -279,29 +282,29 @@ function extraerAtaquesPc(){ // para guardar en la variable ataquesPc los ataque
 
 function secuenciaAtaque(){ //secuencia de ataques del jugador
     secuenciaDeAtaquePc();
-   
+
     botonesAtaques.forEach((boton) => {
-        boton.addEventListener("click", (e) => {           
+        boton.addEventListener("click", (e) => {
             if(e.target.textContent=="🔥"){
                 secuenciaAtaqueJug.push("fuego")
-                boton.style.background="#1D3E65";                
-                boton.disabled=true;                
-                               
+                boton.style.background="#1D3E65";
+                boton.disabled=true;
+
             } else if(e.target.textContent=="💧"){
                 secuenciaAtaqueJug.push("agua")
-                boton.style.background="#1D3E65"; 
+                boton.style.background="#1D3E65";
                 boton.disabled=true;
-                
+
             } else if(e.target.textContent=="🌱"){
                 secuenciaAtaqueJug.push("planta")
                 boton.style.background="#1D3E65";
                 boton.disabled=true;
-                 
+
             }else if(e.target.textContent=="✨"){
                 secuenciaAtaqueJug.push("rayo")
                 boton.style.background="#1D3E65";
                 boton.disabled=true;
-                 
+
             }
             if(secuenciaAtaqueJug.length==5)  combate();   //inicia el combate cuando  el Jug temina de elegir su secuencia de ataques
         })
@@ -315,31 +318,31 @@ function secuenciaDeAtaquePc(){ //secuencia de ataques aleatorio del PC
         indiceAleatorio=aleatorio(0,arrayAtaquesPc.length-1);
         secuenciaAtaquePc.push(arrayAtaquesPc[indiceAleatorio]); // pusheamos el arreglo de la secuencia del pc
         arrayAtaquesPc.splice(indiceAleatorio,1) //eliminamos del array el valor del indice aleatorio escogido, para que no pueda ser elegida de nuevo
-    }    
+    }
     console.log(secuenciaAtaquePc)
-    
+
 }
 
-function combate(){ 
-    // 1 pto para el que gane cada duelo 
+function combate(){
+    // 1 pto para el que gane cada duelo
 
     for(i=0; i<secuenciaAtaqueJug.length; i++){
         ataquesEnfrentados(i,i); // para extraer los ataques de jug y pc enfrentados en cada ronda
         if(secuenciaAtaqueJug[i]==ataquesTotales[0] && secuenciaAtaquePc[i]==ataquesTotales[2] || secuenciaAtaqueJug[i]==ataquesTotales[2] && secuenciaAtaquePc[i]==ataquesTotales[1] || secuenciaAtaqueJug[i]==ataquesTotales[3] && secuenciaAtaquePc[i]==ataquesTotales[1] || secuenciaAtaqueJug[i]==ataquesTotales[2] && secuenciaAtaquePc[i]==ataquesTotales[3]|| secuenciaAtaqueJug[i]==ataquesTotales[1] && secuenciaAtaquePc[i]==ataquesTotales[0]){
             console.log(`Tu pierdes😢, turno ${i+1}`);
-            contadorPuntosPc++;            
-            
+            contadorPuntosPc++;
+
         } else if(secuenciaAtaqueJug[i]==secuenciaAtaquePc[i]|| secuenciaAtaqueJug[i]==ataquesTotales[0] && secuenciaAtaquePc[i]==ataquesTotales[3] || secuenciaAtaqueJug[i]==ataquesTotales[3] && secuenciaAtaquePc[i]==ataquesTotales[0] ) {
             console.log(`Empate, turno ${i+1}`);
-            
-                       
+
+
         } else if(secuenciaAtaqueJug[i]==ataquesTotales[2] && secuenciaAtaquePc[i]==ataquesTotales[0] || secuenciaAtaqueJug[i]==ataquesTotales[1] && secuenciaAtaquePc[i]==ataquesTotales[2] || secuenciaAtaqueJug[i]==ataquesTotales[1] && secuenciaAtaquePc[i]==ataquesTotales[3] || secuenciaAtaqueJug[i]==ataquesTotales[3] && secuenciaAtaquePc[i]==ataquesTotales[2]|| secuenciaAtaqueJug[i]==ataquesTotales[0] && secuenciaAtaquePc[i]==ataquesTotales[1]) {
             console.log(`Tu ganas, turno ${i+1}`);
             contadorPuntosJug++;
         }
         crearMsj1();
-    }  
-    contadorDepuntos(); 
+    }
+    contadorDepuntos();
 }
 
 let turno=0; //para mostrar en pantalla el turno que va
@@ -348,18 +351,18 @@ function contadorDepuntos(){
     if(contadorPuntosJug>contadorPuntosPc){
         turno++;
         resulParcial=`Ronda: ${turno}, Tu Ganas`;
-        spanvidasPc.innerHTML=Number(spanvidasPc.innerText)-1;    
+        spanvidasPc.innerHTML=Number(spanvidasPc.innerText)-1;
          //modifica el DOM con el nuevo numero de vidas del pc
         vidasPC=Number(spanvidasPc.innerText);
         if(vidasPC==0) {
             let mensaje=`TU ${mokeponjug} HA GANADO EL DUELO!!!🥳🎉🥳`
-            crearMsjFinal(mensaje)          
-      
+            crearMsjFinal(mensaje)
+
         }
     } else if(contadorPuntosJug==contadorPuntosPc){
         turno++;
         resulParcial=`Ronda: ${turno}, Es un empate`;
-        
+
     } else {
         turno++;
         resulParcial=`Ronda: ${turno},Tu pierdes`;
@@ -367,9 +370,9 @@ function contadorDepuntos(){
         vidasJug=Number(spanvidasJug.innerText);
         if(vidasJug==0) {
             let mensaje=`GAME OVER! EL ${mokeponPc} ENEMIGO ES UN DIOS `
-            crearMsjFinal(mensaje)                                    
+            crearMsjFinal(mensaje)
         }
-    }      
+    }
     crearMsj2();
 }
 
@@ -381,17 +384,17 @@ function ataquesEnfrentados(indiceJug,indicePc){ // para guardar en variables ca
 function crearMsj1(){    //mensaje inferior de la pantalla
     let nuevoAtaqueJugador = document.createElement("p")//creamos los elementos parrafo
     let nuevoAtaquePc = document.createElement("p");
-    
+
     nuevoAtaqueJugador.innerHTML=ataqueActualJug;//agregamos texto a los parrafos
     nuevoAtaquePc.innerHTML=ataqueActualPc;
-    
+
     ataquesDelJugador.appendChild(nuevoAtaqueJugador)//los cargamos en el HTML
     ataquesDelpc.appendChild(nuevoAtaquePc)
 }
 
 function crearMsj2(){  //mensaje superior de si ganamos o perdimos la ronda
     let notificacion = document.createElement("p"); //creamos los elementos parrafo
-    
+
     notificacion.innerHTML=resulParcial; //agregamos texto a los parrafos
 
     sectionMsj.appendChild(notificacion) //los cargamos en el HTML
@@ -400,54 +403,54 @@ function crearMsj2(){  //mensaje superior de si ganamos o perdimos la ronda
 function crearMsjFinal(resultado){    //resultado final
     let parrafo = document.createElement("p"); // creamos un H3 en HTML que nos da el mensaje de victoria o derrota dependeindo del combate
     parrafo.innerHTML=resultado;
-    sectionMsjFinal.appendChild(parrafo) 
+    sectionMsjFinal.appendChild(parrafo)
 
     //deshabilitar boton de siguiente ronda
     botonSigRonda.disabled=true;
 
     // deshabilitar botones de ataques
     if(idAtaquesJug.indexOf("boton-fuego")>=0) { // si nuestro mokepon tiene este ataque enntra el If
-        botonFuego.disabled=true;        
+        botonFuego.disabled=true;
     }
 
     if(idAtaquesJug.indexOf("boton-agua")>=0){
-        botonAgua.disabled=true;  
-    }    
+        botonAgua.disabled=true;
+    }
 
     if(idAtaquesJug.indexOf("boton-tierra")>=0){
-        botonTierra.disabled=true;        
+        botonTierra.disabled=true;
     }
 
     if(idAtaquesJug.indexOf("boton-rayo")>=0){
-        botonRayo.disabled=true;       
+        botonRayo.disabled=true;
     }
 }
 
-function inciarJuego(){ //para desactivar inicialmente lo que no queremos que se muestre y cargar las tarjetas de mokepones en el HTML    
+function inciarJuego(){ //para desactivar inicialmente lo que no queremos que se muestre y cargar las tarjetas de mokepones en el HTML
     sectionAtaques.style.display="none"// deshabilitamos la secciòn de seleccion ataque
     sectionVerMapa.style.display="none"  // deshabilitamos el mapa
-    let contador=0; // para revisar si llevamos 3 mokepones y organizarlos en un Div inferior en pantalla  
+    let contador=0; // para revisar si llevamos 3 mokepones y organizarlos en un Div inferior en pantalla
     mokepons.forEach((mokepon,indice) => {
         let opcionDeMokepones=`
         <input type="radio" id=${mokepon.nombre} name="mokepon">
         <label class="tarjeta-de-mokepon" for=${mokepon.nombre} >
             <p>${mokepon.nombre} </p>
             <img src=${mokepon.foto}  alt=${mokepon.nombre} >
-        
+
         </label>`
-        
-        if((indice+1)%4==0){             
-            contador++;    // para darle un Id diferente a cada DIV         
+
+        if((indice+1)%4==0){
+            contador++;    // para darle un Id diferente a cada DIV
             let nuevoDiv=document.createElement("div");
             nuevoDiv.id=`contenedor-${contador}`;
-            nuevoDiv.className="tarjetas"                       
+            nuevoDiv.className="tarjetas"
             sectionContenedores.appendChild(nuevoDiv)
             contenedorTarjetas=document.getElementById(`contenedor-${contador}`)
-            contenedorTarjetas.innerHTML+=opcionDeMokepones;     
+            contenedorTarjetas.innerHTML+=opcionDeMokepones;
         } else contenedorTarjetas.innerHTML+=opcionDeMokepones;
-            
-    }) 
-    extraerAtaquesTot()    
+
+    })
+    extraerAtaquesTot()
 }
 
 function reinciar(){
@@ -457,33 +460,45 @@ function reinciar(){
 function siguienteRonda(){
     secuenciaAtaqueJug=[];
     secuenciaAtaquePc=[];
-    extraerAtaquesPc() // se debe llamar porque el split le borra el contenido a la hora de elegir 
+    extraerAtaquesPc() // se debe llamar porque el split le borra el contenido a la hora de elegir
     secuenciaDeAtaquePc(); // el pc vuelve a elegir secuencia
     botonesAtaques.forEach(boton =>{
         boton.disabled=false;
         boton.style.backgroundColor="white";
     })
-    
+
 }
 
-function imagenMokeponJugadorVs(){ //muestra imagen del mokepon elegido por el jugador                    
+function imagenMokeponJugadorVs(){ //muestra imagen del mokepon elegido por el jugador
     let imagenMokeponJugador=new Image(280,280); //width, height
-    imagenMokeponJugador.src=`./assets/${objetoMokeponJug.nombre}.png`            
-    mostrarMokeponJug.appendChild(imagenMokeponJugador);                 
-     
+    imagenMokeponJugador.src=`./assets/${objetoMokeponJug.nombre}.png`
+    mostrarMokeponJug.appendChild(imagenMokeponJugador);
+
 }
 
-function imagenMokeponPcVs(){ //muestra imagen del mokepon elegido por el PC             
+function imagenMokeponPcVs(){ //muestra imagen del mokepon elegido por el PC
     let imagenMokeponPc=new Image(280,280); //width, height
-    imagenMokeponPc.src=`./assets/${objetoMokeponPc.nombre}.png`           
-    mostrarMokeponPc.appendChild(imagenMokeponPc);         
+    imagenMokeponPc.src=`./assets/${objetoMokeponPc.nombre}.png`
+    mostrarMokeponPc.appendChild(imagenMokeponPc);
 }
 
 let intervalo; //interval sirve para llamar una funcion varias veces de forma continua en intervalos de tiempo
+let botonAbajo=document.getElementById("boton-abajo")
 
-function pintarCanvas(){ 
+function pintarCanvas(){
     objetoMokeponJug.x+=objetoMokeponJug.velocidadX;
     objetoMokeponJug.y+=objetoMokeponJug.velocidadY;
+    for(e of conjuntoEnemigosMapa){ 
+        if(e.x + e.velocidadX > mapa.width-e.ancho || e.x <0){ //delimitamos que solo se puedan mover los enemigos dentro del canvas wn X
+            e.velocidadX= -e.velocidadX             
+        }
+        if(e.y + e.velocidadY > mapa.height-e.alto || e.y <0){ //delimitamos que solo se puedan mover los enemigos dentro del canvas en Y
+            e.velocidadY= -e.velocidadY            
+        }
+        e.x+=e.velocidadX
+        e.y+=e.velocidadY
+    }
+    
     lienzo.clearRect(0, 0, mapa.width,mapa.height)  //limpia pantalla de frames anteriores al movimiento nuevo
     lienzo.drawImage(
         mapaBackground,
@@ -493,15 +508,13 @@ function pintarCanvas(){
         mapa.height
     )
     objetoMokeponJug.pintarMokeponJug();
-    // objetoMokeponPc.pintarMokeponPc(); el elegido por el pc
+    // objetoMokeponPc.pintarMokeponPc(); pinta el aleatorio elegido por el pc
+    
+    for(e of conjuntoEnemigosMapa){ // pinta todos los mokepones pc en el mapa
+        e.pintarMokeponPc();
 
-    charizarPc.pintarMokeponPc();
-    blastoisePc.pintarMokeponPc();
-    sceptilePc.pintarMokeponPc();
-    picachuPc.pintarMokeponPc();
-    arcaninePc.pintarMokeponPc();
-    golduckPc.pintarMokeponPc();
-
+    }
+    
     if(objetoMokeponJug.velocidadX !==0 ||
         objetoMokeponJug.velocidadY!==0
     ){
@@ -513,43 +526,48 @@ function pintarCanvas(){
         revisarColision(arcaninePc)
         revisarColision(golduckPc)
     }
-   
-}  
 
-let botonesMov={} 
-let botonAbajo=document.getElementById("boton-abajo")
+}
 
-function moverMokepon(){   
+let botonesMov={}
+
+function moverMokepon(){
     botonesMov=document.querySelectorAll(".bMov"); // guardamos en variable todos los elementos de la clase botones de movimiento
-    botonesMov.forEach((boton) => {        
-        boton.addEventListener("mousedown", (e) => {                           
-                
-                if(e.target.textContent=="🢁"){                
-                    objetoMokeponJug.velocidadY-=5                
-                }
-                if(e.target.textContent=="🢃"){
-                    objetoMokeponJug.velocidadY+=5                
-                }
-                if(e.target.textContent=="◀"){
-                    objetoMokeponJug.velocidadX-=5                
-                }
-                if(e.target.textContent=="➤"){
-                    objetoMokeponJug.velocidadX+=5             
-                }            
+    botonesMov.forEach((boton) => {
+        boton.addEventListener("mousedown", (e) => {
+            if(e.target.textContent=="🢁"){
+                objetoMokeponJug.velocidadY-=5
+            }
+            if(e.target.textContent=="🢃"){
+                objetoMokeponJug.velocidadY+=5
+            }
+            if(e.target.textContent=="◀"){
+                objetoMokeponJug.velocidadX-=5
+            }
+            if(e.target.textContent=="➤"){
+                objetoMokeponJug.velocidadX+=5
+            }
         })
     })
-    
+}
+
+function moverMokeponesPc(){
+    for (e of conjuntoEnemigosMapa){
+        let velocidadAleatoria=aleatorio(-2,2)   
+        e.velocidadX+=velocidadAleatoria*4+2;// graduamos velocidad deseada y sumamos 1 para que nunca sea cero
+        e.velocidadY+=velocidadAleatoria*4+2;       
+    }  
 }
 
 function detenerMov(){
     objetoMokeponJug.velocidadX=0;
-    objetoMokeponJug.velocidadY=0;       
+    objetoMokeponJug.velocidadY=0;
 }
 
 function detenerMovTeclado(event){
     objetoMokeponJug.velocidadX=0;
     objetoMokeponJug.velocidadY=0;
-    keyspressed[event.key]=false; 
+    keyspressed[event.key]=false;
 }
 
 let keyspressed={} // almacenarà teclas presionadas, esto para captar cuando el usuario presiona dos mov al mismo tiempo
@@ -557,42 +575,43 @@ let keyspressed={} // almacenarà teclas presionadas, esto para captar cuando el
 function presionandoTeclado(event){ // todos los eventlistener devuelven el evento de lo presionado
     objetoMokeponJug.velocidadX=0; //para que no se sumen las velocidades cada que se presiona otro boton
     objetoMokeponJug.velocidadY=0;
-    keyspressed[event.key]=true;    
+    keyspressed[event.key]=true;
     switch (event.key) {
         case "ArrowUp":
-        case "w":            
-            objetoMokeponJug.velocidadY-=5                        
+        case "w":
+            objetoMokeponJug.velocidadY-=7
             break;
         case "ArrowDown":
         case "s":
-            objetoMokeponJug.velocidadY+=5             
+            if(objetoMokeponJug.y<400) objetoMokeponJug.velocidadY+=7
             break;
         case "ArrowLeft":
         case "a":
-            objetoMokeponJug.velocidadX-=5             
+            objetoMokeponJug.velocidadX-=7
             break;
         case "ArrowRight":
         case "d":
-            objetoMokeponJug.velocidadX+=5             
-        break;       
+            objetoMokeponJug.velocidadX+=7
+        break;
     }
 
     if(keyspressed["ArrowUp"] && keyspressed["ArrowRight"]){
-        objetoMokeponJug.velocidadY-=5;
-        objetoMokeponJug.velocidadX+=5  
+        objetoMokeponJug.velocidadY-=2.5;
+        objetoMokeponJug.velocidadX+=2.5
     }
     else if(keyspressed["ArrowUp"] && keyspressed["ArrowLeft"]){
-        objetoMokeponJug.velocidadY-=5;
-        objetoMokeponJug.velocidadX-=5  
+        objetoMokeponJug.velocidadY-=2.5;
+        objetoMokeponJug.velocidadX-=2.5
     }
-    else if(keyspressed["ArrowDown"] && keyspressed["ArrowLeft"]){
-        objetoMokeponJug.velocidadY+=5;
-        objetoMokeponJug.velocidadX-=5  
+    else if(keyspressed["ArrowDown"] && keyspressed["ArrowLeft"] && objetoMokeponJug.y<400){
+        objetoMokeponJug.velocidadY+=2.5;
+        objetoMokeponJug.velocidadX-=2.5
     }
-    else if(keyspressed["ArrowDown"] && keyspressed["ArrowRight"]){
-        objetoMokeponJug.velocidadY+=5;
-        objetoMokeponJug.velocidadX+=5  
+    else if(keyspressed["ArrowDown"] && keyspressed["ArrowRight"] && objetoMokeponJug.y<400){
+        objetoMokeponJug.velocidadY+=2.5;
+        objetoMokeponJug.velocidadX+=2.5
     }
+
 }
 
 function revisarColision(enemigo){
@@ -606,28 +625,29 @@ function revisarColision(enemigo){
     const derechaJug=objetoMokeponJug.x +objetoMokeponJug.ancho;
     const izquierdaJug=objetoMokeponJug.x;
 
-    if(abajoJug<arribaPc || 
-        arribaJug>abajoPc || 
+    if(abajoJug<arribaPc ||
+        arribaJug>abajoPc ||
         derechaJug < izquierdaPc ||
         izquierdaJug>derechaPc
     ){
         return
-    } else {                    
+    } else {
         detenerMov();
         window.removeEventListener("keydown",presionandoTeclado,true) // deshabilitamos el evento de escuchar el teclado, para que no se nos mueva en segundo plano cuando presionemos una tecla
-        selectMokeponPc(enemigo)       
-        sectionAtaques.style.display="flex"// habilitamos la secciòn de seleccion ataque 
+        selectMokeponPc(enemigo)
+        sectionAtaques.style.display="flex"// habilitamos la secciòn de seleccion ataque
         sectionVerMapa.style.display="none" // deshabilidtamos el canvas
 
-    } 
-    
+    }
+
 }
 
 function iniciarMapa(){
     mapa.width=800
     mapa.height=500
     intervalo=setInterval(pintarCanvas,50) // para que nuestro canvas se este actualizando ocnstantemente y asi ver el movimiento, llama casa 50 ms la funcion pintarNokepon
-    moverMokepon(); 
+    moverMokepon();
+    moverMokeponesPc();
     window.addEventListener("keydown", presionandoTeclado,true) // deja presionada un atecla
     window.addEventListener("keyup", detenerMovTeclado)    // deja de presionarla
 }
