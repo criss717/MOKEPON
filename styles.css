@@ -95,8 +95,7 @@ input:checked + label {
     background-color: #2c85b2;
     width: 300px;
     height: 60px;
-    margin-top: 5px;
-    margin-bottom: 5px;
+    margin:5px;
     border: 5px solid #58287F;
     border-radius: 20px;
     color: #58287F;
@@ -209,6 +208,19 @@ button:hover{
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
+   
+}
+
+.bMov{
+    background-color: #2c85b2;
+    width: 80px;
+    height: 72px;
+    margin: 5px;
+    border: 5px solid #58287F;
+    border-radius: 10px;
+    color: #58287F;
+    font-size: 25px; 
 }
 
 #ver-mapa{

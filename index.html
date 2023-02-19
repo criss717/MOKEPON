@@ -29,10 +29,16 @@
         <h2>Recorre el mapa con tu mokepon</h2>
         <canvas id="mapa"></canvas>
         <div id="botones-movimiento">
-            <button onmouseup="detenerMov()" class="botones bMov">Arriba</button>
-            <button onmouseup="detenerMov()" class="botones bMov">Abajo</button>
-            <button onmouseup="detenerMov()" class="botones bMov">Izquierda</button>
-            <button onmouseup="detenerMov()" class="botones bMov">Derecha</button>
+            <div>
+                <button id="boton-arriba" onmouseup="detenerMov()" class="botones bMov">🢁</button>
+                
+            </div>
+            <div >   
+                <button onmouseup="detenerMov()" class="botones bMov">◀</button>
+                <button id="boton-abajo" onmouseup="detenerMov()" class="botones bMov">🢃</button>                
+                <button onmouseup="detenerMov()" class="botones bMov">➤</button>
+            </div>           
+            
         </div>
 
     </section>
