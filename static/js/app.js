@@ -59,8 +59,10 @@ let contadorPuntosPc=0;
 let objetoMokeponJug; //guarda el objeto "mascota" elegido por el JUG
 let objetoMokeponPc; //guarda el objeto "mascota" elegido por el pc
 
+let jugadorId=null;
+
 class Mokepon{
-    constructor(nombre,foto,vida,x=35,y=420){
+    constructor(nombre,foto,vida,x=35,y=420,id){
         this.nombre=nombre;
         this.foto=foto;
         this.vida=vida;
@@ -73,6 +75,7 @@ class Mokepon{
         this.mapaFoto.src=foto;
         this.velocidadX=0;
         this.velocidadY=0;
+        this.id;
     }
 
     pintarMokeponJug(){ //metodo para pintar el mokepon en el canvas
@@ -104,14 +107,15 @@ let picachu=new Mokepon("picachu",`./assets/picachu.png`,5);
 let arcanine=new Mokepon("arcanine",`./assets/arcanine.png`,5);
 let golduck=new Mokepon("golduck",`./assets/golduck.png`,5);
 
-let conjuntoEnemigosMapa=[];
-let charizarPc=new Mokepon("charizar",`./assets/charizar.png`,5,580,30); // enemigos para ver en el mapa
-let blastoisePc=new Mokepon("blastoise",`./assets/blastoise.png`,5,580,100);
-let sceptilePc=new Mokepon("sceptile",`./assets/sceptile.png`,5,580,200);
-let picachuPc=new Mokepon("picachu",`./assets/picachu.png`,5,400,30);
-let arcaninePc=new Mokepon("arcanine",`./assets/arcanine.png`,5,400,100);
-let golduckPc=new Mokepon("golduck",`./assets/golduck.png`,5,400,200);
-conjuntoEnemigosMapa.push(charizarPc,blastoisePc,sceptilePc,picachuPc,arcaninePc,golduckPc)
+let conjuntoEnemigos=[];
+// let conjuntoEnemigosMapa=[];
+//  let charizarPc=new Mokepon("charizar",`./assets/charizar.png`,5,580,30); // enemigos para ver en el mapa
+//  let blastoisePc=new Mokepon("blastoise",`./assets/blastoise.png`,5,580,100);
+//  let sceptilePc=new Mokepon("sceptile",`./assets/sceptile.png`,5,580,200);
+//  let picachuPc=new Mokepon("picachu",`./assets/picachu.png`,5,400,30);
+//  let arcaninePc=new Mokepon("arcanine",`./assets/arcanine.png`,5,400,100);
+//  let golduckPc=new Mokepon("golduck",`./assets/golduck.png`,5,400,200);
+//  conjuntoEnemigosMapa.push(charizarPc,blastoisePc,sceptilePc,picachuPc,arcaninePc,golduckPc)
 
 
 charizar.ataques.push(
@@ -188,9 +192,24 @@ function selectMokepon(){
             botonSelectMokepon.disabled=true;
             sectionMascota.style.display="none"// deshabilitamos la secciòn de seleccionar mokepon
             selectMokeponPc(); // invocamos al enemigo
+            seleccionarMokepon(mokeponjug);
             return;
     }}
     if(cont) alert("Debes seleccionar algún Mokepón");
+
+}
+
+function seleccionarMokepon(mokeponDelJug){ //parte servidor
+    fetch(`http://localhost:8080/mokepon/${jugadorId}`,{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify({
+            mokepon:mokeponDelJug
+        })
+    })
+        
 }
 
 function aleatorio(min,max){   // función para sacar numeros aleatorios entre un min y un max
@@ -451,6 +470,21 @@ function inciarJuego(){ //para desactivar inicialmente lo que no queremos que se
 
     })
     extraerAtaquesTot()
+    unirseAlJuego();
+}
+
+function unirseAlJuego(){ //peticion hacia el servidor
+    fetch("http://localhost:8080/unirse") //indicamos a donde se debe conectra(por defecto llama al metodo GET)
+        .then(function (res) {            
+            if(res.ok) {//si hay datos de respuesta
+                res.text()
+                    .then(function(respuesta){
+                        console.log(respuesta)
+                        jugadorId=respuesta
+                    })
+            }
+        })
+      
 }
 
 function reinciar(){
@@ -488,16 +522,16 @@ let botonAbajo=document.getElementById("boton-abajo")
 function pintarCanvas(){
     objetoMokeponJug.x+=objetoMokeponJug.velocidadX;
     objetoMokeponJug.y+=objetoMokeponJug.velocidadY;
-    for(e of conjuntoEnemigosMapa){ 
-        if(e.x + e.velocidadX > mapa.width-e.ancho || e.x <0){ //delimitamos que solo se puedan mover los enemigos dentro del canvas wn X
-            e.velocidadX= -e.velocidadX             
-        }
-        if(e.y + e.velocidadY > mapa.height-e.alto || e.y <0){ //delimitamos que solo se puedan mover los enemigos dentro del canvas en Y
-            e.velocidadY= -e.velocidadY            
-        }
-        e.x+=e.velocidadX
-        e.y+=e.velocidadY
-    }
+    // for(e of conjuntoEnemigosMapa){ 
+    //     if(e.x + e.velocidadX > mapa.width-e.ancho || e.x <0){ //delimitamos que solo se puedan mover los enemigos dentro del canvas wn X
+    //         e.velocidadX= -e.velocidadX             
+    //     }
+    //     if(e.y + e.velocidadY > mapa.height-e.alto || e.y <0){ //delimitamos que solo se puedan mover los enemigos dentro del canvas en Y
+    //         e.velocidadY= -e.velocidadY            
+    //     }
+    //     e.x+=e.velocidadX
+    //     e.y+=e.velocidadY
+    // }
     
     lienzo.clearRect(0, 0, mapa.width,mapa.height)  //limpia pantalla de frames anteriores al movimiento nuevo
     lienzo.drawImage(
@@ -509,26 +543,64 @@ function pintarCanvas(){
     )
     objetoMokeponJug.pintarMokeponJug();
     // objetoMokeponPc.pintarMokeponPc(); pinta el aleatorio elegido por el pc
-    
-    for(e of conjuntoEnemigosMapa){ // pinta todos los mokepones pc en el mapa
-        e.pintarMokeponPc();
+            
+    // for(e of conjuntoEnemigosMapa){ // pinta todos los mokepones pc en el mapa
+    //     e.pintarMokeponPc();
+        
+    // }
+   
 
-    }
-    
     if(objetoMokeponJug.velocidadX !==0 ||
         objetoMokeponJug.velocidadY!==0
-    ){
+        ){
         // revisarColision(objetoMokcheponPc);   // el elegido por el pc
-        revisarColision(charizarPc)
-        revisarColision(blastoisePc)
-        revisarColision(sceptilePc)
-        revisarColision(picachuPc)
-        revisarColision(arcaninePc)
-        revisarColision(golduckPc)
+        // revisarColision(charizarPc)
+        // revisarColision(blastoisePc)
+        // revisarColision(sceptilePc)
+        // revisarColision(picachuPc)
+        // revisarColision(arcaninePc)
+        // revisarColision(golduckPc)
+        
     }
+    enviarPosition(objetoMokeponJug.x,objetoMokeponJug.y) //lado server
+    
+    conjuntoEnemigos.forEach((enemigo)=>{
+        if(enemigo){ // solo si existe un enemigo online!
+            enemigo.pintarMokeponJug()
 
+        }
+    })
 }
 
+function enviarPosition(x,y){ //parte servidor
+    fetch(`http://localhost:8080/mokepon/${jugadorId}/position`,{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify({
+            positionX:x,
+            positionY:y
+        })
+    })
+        .then (function(res){ // primero revisamos si la peticion obtuvo respuesta del server
+        if(res.ok){
+            res.json() //para leer su respuesta debemos usar then
+                .then(function({listaEnemigos}){//con las llaves directamente es como si hicieramos e.listaEnemigos
+                    console.log(listaEnemigos) // mostramos la lista d enemigos conectados desde el server
+                    conjuntoEnemigos= listaEnemigos.map((enemigo)=>{ //el map retorna un elemento 
+                        if(enemigo.mokepon){ // para evitar errores de lista vacia
+                        const mokeponEnemigoNombre= enemigo.mokepon.nombre || "" 
+                        let enemigoOnline=new Mokepon(`${mokeponEnemigoNombre}`,`./assets/${mokeponEnemigoNombre}.png`,5,enemigo.x,enemigo.y); // creamos los mokepons elejidos por los otros jug online
+                        return enemigoOnline;
+                    }           
+                    })
+                })
+
+        }
+    }) 
+        
+}
 let botonesMov={}
 
 function moverMokepon(){
@@ -551,13 +623,14 @@ function moverMokepon(){
     })
 }
 
-function moverMokeponesPc(){
-    for (e of conjuntoEnemigosMapa){
-        let velocidadAleatoria=aleatorio(-2,2)   
-        e.velocidadX+=velocidadAleatoria*4+2;// graduamos velocidad deseada y sumamos 1 para que nunca sea cero
-        e.velocidadY+=velocidadAleatoria*4+2;       
-    }  
-}
+
+// function moverMokeponesPc(){
+//     for (e of conjuntoEnemigosMapa){
+//         let velocidadAleatoria=aleatorio(-2,2)   
+//         e.velocidadX+=velocidadAleatoria*4+2;// graduamos velocidad deseada y sumamos 1 para que nunca sea cero
+//         e.velocidadY+=velocidadAleatoria*4+2;       
+//     }  
+// }
 
 function detenerMov(){
     objetoMokeponJug.velocidadX=0;
@@ -647,7 +720,7 @@ function iniciarMapa(){
     mapa.height=500
     intervalo=setInterval(pintarCanvas,50) // para que nuestro canvas se este actualizando ocnstantemente y asi ver el movimiento, llama casa 50 ms la funcion pintarNokepon
     moverMokepon();
-    moverMokeponesPc();
+    // moverMokeponesPc();
     window.addEventListener("keydown", presionandoTeclado,true) // deja presionada un atecla
     window.addEventListener("keyup", detenerMovTeclado)    // deja de presionarla
 }
