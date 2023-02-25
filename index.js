@@ -23,6 +23,10 @@ class Jugador {
         this.x=x;
         this.y=y;
     }
+
+    asignarAtaques(ataques){
+        this.ataques=ataques
+    }
 }
 
 class Mokepon {
@@ -64,7 +68,7 @@ app.post("/mokepon/:jugadorId", (req,res) => { //para saber que mokepones han el
             e.asignarMokepon(mokepon) // le asignamos el mokepon elegido 
         }
     }
-    console.log(jugadores)    
+       
     res.end()
 })
 
@@ -79,10 +83,34 @@ app.post("/mokepon/:jugadorId/position", (req,res) => { // para saber que posici
         }
     }
     const listaEnemigos=jugadores.filter((jugador)=>jugadorId !== jugador.id) // creamos una lista de los jugadores que esten conectados, excepto el que mando la req
-    console.log(jugadores)    
+      
     res.send({  // el server responde con la lista de enemigos, sus id y sus coordenadas
         listaEnemigos
     }) 
+})
+
+app.post("/mokepon/:jugadorId/ataques", (req,res)=> { // guarda lasecuenciaelejifdda por el jug 
+    const jugadorId=req.params.jugadorId || ""
+    const ataques=req.body.ataquesJug || []
+    
+    for(e of jugadores){ // revisamos si existe el id del que manda el req
+        if(e.id==jugadorId){
+            e.asignarAtaques(ataques) // asignamos la secuencia de ataque elejida por el jug
+        }
+    }
+         
+})
+
+app.get("/mokepon/:jugadorId/ataques", (req,res)=> { // para enviar los ataques elegidos por el enemigo
+    const jugadorId=req.params.jugadorId || ""
+    
+    const enemigo=jugadores.filter(jugador=>jugador.id==jugadorId) // buscamos el que tiene el id de nuestro enemigo y lo guardamos en la variable enemigo
+    
+    res.send({ // responde con los ataques del jugador enemigo en formato json
+        ataques: enemigo[0].ataques || []
+    })
+       
+    
 })
 
 // Activamos el servidor en el puerto 8080

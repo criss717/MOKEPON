@@ -60,6 +60,7 @@ let objetoMokeponJug; //guarda el objeto "mascota" elegido por el JUG
 let objetoMokeponPc; //guarda el objeto "mascota" elegido por el pc
 
 let jugadorId=null;
+let enemigoId=null;
 
 class Mokepon{
     constructor(nombre,foto,vida,x=35,y=420,id){
@@ -75,7 +76,7 @@ class Mokepon{
         this.mapaFoto.src=foto;
         this.velocidadX=0;
         this.velocidadY=0;
-        this.id;
+        this.id=id;
     }
 
     pintarMokeponJug(){ //metodo para pintar el mokepon en el canvas
@@ -300,7 +301,7 @@ function extraerAtaquesPc(){ // para guardar en la variable ataquesPc los ataque
 }
 
 function secuenciaAtaque(){ //secuencia de ataques del jugador
-    secuenciaDeAtaquePc();
+    // secuenciaDeAtaquePc();
 
     botonesAtaques.forEach((boton) => {
         boton.addEventListener("click", (e) => {
@@ -325,9 +326,41 @@ function secuenciaAtaque(){ //secuencia de ataques del jugador
                 boton.disabled=true;
 
             }
-            if(secuenciaAtaqueJug.length==5)  combate();   //inicia el combate cuando  el Jug temina de elegir su secuencia de ataques
+            if(secuenciaAtaqueJug.length==5){
+                enviarAtaquesServer();
+                
+            }  
         })
     });
+}
+
+function enviarAtaquesServer(){
+    fetch(`http://localhost:8080/mokepon/${jugadorId}/ataques`,{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify({
+            ataquesJug:secuenciaAtaqueJug
+        })
+    })
+    intervalo=setInterval(recibirAtaques,50) // cada 50 ms revisamos si ya obtuvimos la secuencia de ataques del oponente
+}
+
+function recibirAtaques(){
+    fetch(`http://localhost:8080/mokepon/${enemigoId}/ataques`)
+        .then (function(res){ // primero revisamos si la peticion obtuvo respuesta del server
+            if(res.ok){ //res viene como una lista que contiene la secuencia de ataques del oponente 
+                res.json() //para leer su respuesta debemos usar then
+                    .then(function({ataques}){ // //con las llaves directamente es como si hicieramos repuesta.
+                        if(ataques.length==5){ // hasta que complete la secuecia
+                            secuenciaAtaquePc=ataques; // asignamos la lista queel server nos devuelve
+                            combate();
+                        
+                    }
+
+                })
+            }})
 }
 
 function secuenciaDeAtaquePc(){ //secuencia de ataques aleatorio del PC
@@ -343,6 +376,9 @@ function secuenciaDeAtaquePc(){ //secuencia de ataques aleatorio del PC
 }
 
 function combate(){
+
+    clearInterval(intervalo)//para que deje de ejecutarse
+
     // 1 pto para el que gane cada duelo
 
     for(i=0; i<secuenciaAtaqueJug.length; i++){
@@ -547,30 +583,41 @@ function pintarCanvas(){
     // for(e of conjuntoEnemigosMapa){ // pinta todos los mokepones pc en el mapa
     //     e.pintarMokeponPc();
         
-    // }
-   
+    // }   
 
+    
+    conjuntoEnemigos.forEach((enemigo)=>{ // pintamos en mapa los enemigos online
+        if(enemigo){ // solo si existe un enemigo online!
+            enemigo.pintarMokeponJug()                                    
+        }
+    })
+    
+   
+    enviarPosition(objetoMokeponJug.x,objetoMokeponJug.y) //lado server
+
+    
+    conjuntoEnemigos.forEach((enemigo)=>{
+        if(enemigo){ // solo si existe un enemigo online!
+            revisarColision(enemigo)
+           
+        }
+    })
+    
     if(objetoMokeponJug.velocidadX !==0 ||
         objetoMokeponJug.velocidadY!==0
         ){
-        // revisarColision(objetoMokcheponPc);   // el elegido por el pc
-        // revisarColision(charizarPc)
+            // revisarColision(objetoMokcheponPc);   // el elegido por el pc
+            // revisarColision(charizarPc)
         // revisarColision(blastoisePc)
         // revisarColision(sceptilePc)
         // revisarColision(picachuPc)
         // revisarColision(arcaninePc)
         // revisarColision(golduckPc)
-        
-    }
-    enviarPosition(objetoMokeponJug.x,objetoMokeponJug.y) //lado server
-    
-    conjuntoEnemigos.forEach((enemigo)=>{
-        if(enemigo){ // solo si existe un enemigo online!
-            enemigo.pintarMokeponJug()
 
-        }
-    })
+
+    }
 }
+
 
 function enviarPosition(x,y){ //parte servidor
     fetch(`http://localhost:8080/mokepon/${jugadorId}/position`,{
@@ -586,12 +633,12 @@ function enviarPosition(x,y){ //parte servidor
         .then (function(res){ // primero revisamos si la peticion obtuvo respuesta del server
         if(res.ok){
             res.json() //para leer su respuesta debemos usar then
-                .then(function({listaEnemigos}){//con las llaves directamente es como si hicieramos e.listaEnemigos
-                    console.log(listaEnemigos) // mostramos la lista d enemigos conectados desde el server
+                .then(function({listaEnemigos}){//con las llaves directamente es como si hicieramos repuesta.listaEnemigos
+                    
                     conjuntoEnemigos= listaEnemigos.map((enemigo)=>{ //el map retorna un elemento 
                         if(enemigo.mokepon){ // para evitar errores de lista vacia
                         const mokeponEnemigoNombre= enemigo.mokepon.nombre || "" 
-                        let enemigoOnline=new Mokepon(`${mokeponEnemigoNombre}`,`./assets/${mokeponEnemigoNombre}.png`,5,enemigo.x,enemigo.y); // creamos los mokepons elejidos por los otros jug online
+                        let enemigoOnline=new Mokepon(`${mokeponEnemigoNombre}`,`./assets/${mokeponEnemigoNombre}.png`,5,enemigo.x,enemigo.y,enemigo.id); // creamos los mokepons elejidos por los otros jug online
                         return enemigoOnline;
                     }           
                     })
@@ -706,10 +753,12 @@ function revisarColision(enemigo){
         return
     } else {
         detenerMov();
+        clearInterval(intervalo); // para que deje de ejecutarse el pintar canvas
         window.removeEventListener("keydown",presionandoTeclado,true) // deshabilitamos el evento de escuchar el teclado, para que no se nos mueva en segundo plano cuando presionemos una tecla
+        enemigoId=enemigo.id;
         selectMokeponPc(enemigo)
         sectionAtaques.style.display="flex"// habilitamos la secciòn de seleccion ataque
-        sectionVerMapa.style.display="none" // deshabilidtamos el canvas
+        sectionVerMapa.style.display="none" // deshabilitamos el canvas
 
     }
 
