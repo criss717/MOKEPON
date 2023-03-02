@@ -4,8 +4,12 @@ const cors=require("cors")
 
 // Creamos la aplicación de Express
 const app = express();
+
+app.use(express.static("public")) // nos sirve para poder conectarnos desde el celu con wifi, ver el forntend desde el backend
 app.use(cors()); // corregimos errores de ACCESS del navegador
 app.use(express.json()) // habilitamos recibir POST en formato JSON 
+
+
 
 // Escojemos un puerto por el que el servidor web escuchará
 const port = 8080;
@@ -104,10 +108,10 @@ app.post("/mokepon/:jugadorId/ataques", (req,res)=> { // guarda lasecuenciaeleji
 app.get("/mokepon/:jugadorId/ataques", (req,res)=> { // para enviar los ataques elegidos por el enemigo
     const jugadorId=req.params.jugadorId || ""
     
-    const enemigo=jugadores.filter(jugador=>jugador.id==jugadorId) // buscamos el que tiene el id de nuestro enemigo y lo guardamos en la variable enemigo
+    const enemigo=jugadores.find(jugador=>jugador.id==jugadorId) // buscamos el que tiene el id de nuestro enemigo y lo guardamos en la variable enemigo
     
     res.send({ // responde con los ataques del jugador enemigo en formato json
-        ataques: enemigo[0].ataques || []
+        ataques: enemigo.ataques || []
     })
        
     

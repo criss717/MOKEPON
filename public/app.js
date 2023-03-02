@@ -180,7 +180,7 @@ function extraerAtaquesTot(){ // para tener en un array los ataques totales del 
     ataquesTotales=[...comodin] //ahora convertimos en array nuestro conjunto sin duplicados
 }
 
-inciarJuego();
+iniciarJuego();
 
 function selectMokepon(){
 
@@ -201,7 +201,7 @@ function selectMokepon(){
 }
 
 function seleccionarMokepon(mokeponDelJug){ //parte servidor
-    fetch(`http://localhost:8080/mokepon/${jugadorId}`,{
+    fetch(`http://192.168.1.117:8080/mokepon/${jugadorId}`,{
         method:"POST",
         headers:{
             "Content-Type":"application/json"
@@ -335,7 +335,7 @@ function secuenciaAtaque(){ //secuencia de ataques del jugador
 }
 
 function enviarAtaquesServer(){
-    fetch(`http://localhost:8080/mokepon/${jugadorId}/ataques`,{
+    fetch(`http://192.168.1.117:8080/mokepon/${jugadorId}/ataques`,{
         method:"POST",
         headers:{
             "Content-Type":"application/json"
@@ -348,7 +348,7 @@ function enviarAtaquesServer(){
 }
 
 function recibirAtaques(){
-    fetch(`http://localhost:8080/mokepon/${enemigoId}/ataques`)
+    fetch(`http://192.168.1.117:8080/mokepon/${enemigoId}/ataques`)
         .then (function(res){ // primero revisamos si la peticion obtuvo respuesta del server
             if(res.ok){ //res viene como una lista que contiene la secuencia de ataques del oponente 
                 res.json() //para leer su respuesta debemos usar then
@@ -481,7 +481,7 @@ function crearMsjFinal(resultado){    //resultado final
     }
 }
 
-function inciarJuego(){ //para desactivar inicialmente lo que no queremos que se muestre y cargar las tarjetas de mokepones en el HTML
+function iniciarJuego(){ //para desactivar inicialmente lo que no queremos que se muestre y cargar las tarjetas de mokepones en el HTML
     sectionAtaques.style.display="none"// deshabilitamos la secciòn de seleccion ataque
     sectionVerMapa.style.display="none"  // deshabilitamos el mapa
     let contador=0; // para revisar si llevamos 3 mokepones y organizarlos en un Div inferior en pantalla
@@ -510,7 +510,7 @@ function inciarJuego(){ //para desactivar inicialmente lo que no queremos que se
 }
 
 function unirseAlJuego(){ //peticion hacia el servidor
-    fetch("http://localhost:8080/unirse") //indicamos a donde se debe conectra(por defecto llama al metodo GET)
+    fetch("http://192.168.1.117:8080/unirse") //indicamos a donde se debe conectar (por defecto llama al metodo GET)
         .then(function (res) {            
             if(res.ok) {//si hay datos de respuesta
                 res.text()
@@ -553,7 +553,6 @@ function imagenMokeponPcVs(){ //muestra imagen del mokepon elegido por el PC
 }
 
 let intervalo; //interval sirve para llamar una funcion varias veces de forma continua en intervalos de tiempo
-let botonAbajo=document.getElementById("boton-abajo")
 
 function pintarCanvas(){
     objetoMokeponJug.x+=objetoMokeponJug.velocidadX;
@@ -577,6 +576,21 @@ function pintarCanvas(){
         mapa.width,
         mapa.height
     )
+    if(objetoMokeponJug.x>mapa.width-objetoMokeponJug.ancho){  // delimitamos mov dentro del canvas
+        objetoMokeponJug.x=mapa.width-objetoMokeponJug.ancho+1
+    }
+    if(objetoMokeponJug.y>mapa.height-objetoMokeponJug.alto){
+        objetoMokeponJug.y=mapa.height-objetoMokeponJug.alto+1
+    }
+    if(objetoMokeponJug.x<0){
+        objetoMokeponJug.x=1;           
+    }
+    if(objetoMokeponJug.y<0){
+        objetoMokeponJug.y=1;           
+    }
+
+    
+
     objetoMokeponJug.pintarMokeponJug();
     // objetoMokeponPc.pintarMokeponPc(); pinta el aleatorio elegido por el pc
             
@@ -606,8 +620,8 @@ function pintarCanvas(){
     if(objetoMokeponJug.velocidadX !==0 ||
         objetoMokeponJug.velocidadY!==0
         ){
-            // revisarColision(objetoMokcheponPc);   // el elegido por el pc
-            // revisarColision(charizarPc)
+        // revisarColision(objetoMokcheponPc);   // el elegido por el pc
+        // revisarColision(charizarPc)
         // revisarColision(blastoisePc)
         // revisarColision(sceptilePc)
         // revisarColision(picachuPc)
@@ -620,7 +634,7 @@ function pintarCanvas(){
 
 
 function enviarPosition(x,y){ //parte servidor
-    fetch(`http://localhost:8080/mokepon/${jugadorId}/position`,{
+    fetch(`http://192.168.1.117:8080/mokepon/${jugadorId}/position`,{
         method:"POST",
         headers:{
             "Content-Type":"application/json"
@@ -660,7 +674,7 @@ function moverMokepon(){
             if(e.target.textContent=="🢃"){
                 objetoMokeponJug.velocidadY+=5
             }
-            if(e.target.textContent=="◀"){
+            if(e.target.textContent=="◀" && objetoMokeponJug.x>0){
                 objetoMokeponJug.velocidadX-=5
             }
             if(e.target.textContent=="➤"){
@@ -699,16 +713,16 @@ function presionandoTeclado(event){ // todos los eventlistener devuelven el even
     switch (event.key) {
         case "ArrowUp":
         case "w":
-            objetoMokeponJug.velocidadY-=7
-            break;
+            objetoMokeponJug.velocidadY-=7 
+        break;
         case "ArrowDown":
         case "s":
-            if(objetoMokeponJug.y<400) objetoMokeponJug.velocidadY+=7
-            break;
+            objetoMokeponJug.velocidadY+=7
+        break;
         case "ArrowLeft":
         case "a":
             objetoMokeponJug.velocidadX-=7
-            break;
+        break;
         case "ArrowRight":
         case "d":
             objetoMokeponJug.velocidadX+=7
@@ -723,11 +737,11 @@ function presionandoTeclado(event){ // todos los eventlistener devuelven el even
         objetoMokeponJug.velocidadY-=2.5;
         objetoMokeponJug.velocidadX-=2.5
     }
-    else if(keyspressed["ArrowDown"] && keyspressed["ArrowLeft"] && objetoMokeponJug.y<400){
+    else if(keyspressed["ArrowDown"] && keyspressed["ArrowLeft"]){
         objetoMokeponJug.velocidadY+=2.5;
         objetoMokeponJug.velocidadX-=2.5
     }
-    else if(keyspressed["ArrowDown"] && keyspressed["ArrowRight"] && objetoMokeponJug.y<400){
+    else if(keyspressed["ArrowDown"] && keyspressed["ArrowRight"]){
         objetoMokeponJug.velocidadY+=2.5;
         objetoMokeponJug.velocidadX+=2.5
     }
