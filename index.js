@@ -93,28 +93,28 @@ app.post("/mokepon/:jugadorId/position", (req,res) => { // para saber que posici
     }) 
 })
 
-app.post("/mokepon/:jugadorId/ataques", (req,res)=> { // guarda lasecuenciaelejifdda por el jug 
+app.post("/mokepon/:jugadorId/ataques", (req,res)=> { // guarda la secuencia elegida por el jug 
     const jugadorId=req.params.jugadorId || ""
     const ataques=req.body.ataquesJug || []
-    
+        
     for(e of jugadores){ // revisamos si existe el id del que manda el req
         if(e.id==jugadorId){
             e.asignarAtaques(ataques) // asignamos la secuencia de ataque elejida por el jug
-        }
-    }
-         
+            console.log(e)
+        }   
+    }   
+        
 })
 
 app.get("/mokepon/:jugadorId/ataques", (req,res)=> { // para enviar los ataques elegidos por el enemigo
-    const jugadorId=req.params.jugadorId || ""
-    
-    const enemigo=jugadores.find(jugador=>jugador.id==jugadorId) // buscamos el que tiene el id de nuestro enemigo y lo guardamos en la variable enemigo
-    
+    const enemigoId=req.params.jugadorId || ""
+    const enemigo=jugadores.find(jugador=>jugador.id==enemigoId) // buscamos el que tiene el id de nuestro enemigo y lo guardamos en la variable enemigo
+         
     res.send({ // responde con los ataques del jugador enemigo en formato json
         ataques: enemigo.ataques || []
     })
+    // enemigo.ataques=1213 // para reiniciar y que cuando demos a siguiente ronda, este vacío
        
-    
 })
 
 // Activamos el servidor en el puerto 8080

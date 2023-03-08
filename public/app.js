@@ -169,7 +169,7 @@ golduck.ataques.push(
 
 mokepons.push(charizar,blastoise,sceptile,picachu,arcanine,golduck)
 
-function extraerAtaquesTot(){ // para tener en un array los ataques totales del juego, nos servcira para hacer el cotejo en la funcion combate
+function extraerAtaquesTot(){ // para tener en un array los ataques totales del juego, nos servira para hacer el cotejo en la funcion combate
     let ataquesDuplicados=[] // aqui se guardan todos los ataques, pero habrà mas de uno del mismo nombre
     for(x=0; x<mokepons.length; x++){
         for(i=0; i<5; i++){
@@ -201,7 +201,7 @@ function selectMokepon(){
 }
 
 function seleccionarMokepon(mokeponDelJug){ //parte servidor
-    fetch(`http://192.168.1.117:8080/mokepon/${jugadorId}`,{
+    fetch(`http://192.168.1.140:8080/mokepon/${jugadorId}`,{
         method:"POST",
         headers:{
             "Content-Type":"application/json"
@@ -302,7 +302,6 @@ function extraerAtaquesPc(){ // para guardar en la variable ataquesPc los ataque
 
 function secuenciaAtaque(){ //secuencia de ataques del jugador
     // secuenciaDeAtaquePc();
-
     botonesAtaques.forEach((boton) => {
         boton.addEventListener("click", (e) => {
             if(e.target.textContent=="🔥"){
@@ -327,6 +326,7 @@ function secuenciaAtaque(){ //secuencia de ataques del jugador
 
             }
             if(secuenciaAtaqueJug.length==5){
+                console.log("envio")
                 enviarAtaquesServer();
                 
             }  
@@ -335,7 +335,7 @@ function secuenciaAtaque(){ //secuencia de ataques del jugador
 }
 
 function enviarAtaquesServer(){
-    fetch(`http://192.168.1.117:8080/mokepon/${jugadorId}/ataques`,{
+    fetch(`http://192.168.1.140:8080/mokepon/${jugadorId}/ataques`,{
         method:"POST",
         headers:{
             "Content-Type":"application/json"
@@ -348,17 +348,17 @@ function enviarAtaquesServer(){
 }
 
 function recibirAtaques(){
-    fetch(`http://192.168.1.117:8080/mokepon/${enemigoId}/ataques`)
+    fetch(`http://192.168.1.140:8080/mokepon/${enemigoId}/ataques`)
         .then (function(res){ // primero revisamos si la peticion obtuvo respuesta del server
             if(res.ok){ //res viene como una lista que contiene la secuencia de ataques del oponente 
                 res.json() //para leer su respuesta debemos usar then
-                    .then(function({ataques}){ // //con las llaves directamente es como si hicieramos repuesta.
+                    .then(function({ataques}){ // //con las llaves directamente es como si hicieramos respuesta.ataques
+                        console.log(ataques)
                         if(ataques.length==5){ // hasta que complete la secuecia
-                            secuenciaAtaquePc=ataques; // asignamos la lista queel server nos devuelve
-                            combate();
-                        
+                            secuenciaAtaquePc=ataques; // asignamos la lista que el server nos devuelve
+                            combate();                          
+                                              
                     }
-
                 })
             }})
 }
@@ -510,7 +510,7 @@ function iniciarJuego(){ //para desactivar inicialmente lo que no queremos que s
 }
 
 function unirseAlJuego(){ //peticion hacia el servidor
-    fetch("http://192.168.1.117:8080/unirse") //indicamos a donde se debe conectar (por defecto llama al metodo GET)
+    fetch("http://192.168.1.140:8080/unirse") //indicamos a donde se debe conectar (por defecto llama al metodo GET)
         .then(function (res) {            
             if(res.ok) {//si hay datos de respuesta
                 res.text()
@@ -529,13 +529,14 @@ function reinciar(){
 
 function siguienteRonda(){
     secuenciaAtaqueJug=[];
-    secuenciaAtaquePc=[];
-    extraerAtaquesPc() // se debe llamar porque el split le borra el contenido a la hora de elegir
-    secuenciaDeAtaquePc(); // el pc vuelve a elegir secuencia
+    secuenciaAtaquePc=[];    
+    // extraerAtaquesPc() // se debe llamar porque el split le borra el contenido a la hora de elegir
+    // secuenciaDeAtaquePc(); // el pc vuelve a elegir secuencia
     botonesAtaques.forEach(boton =>{
         boton.disabled=false;
         boton.style.backgroundColor="white";
     })
+    
 
 }
 
@@ -634,7 +635,7 @@ function pintarCanvas(){
 
 
 function enviarPosition(x,y){ //parte servidor
-    fetch(`http://192.168.1.117:8080/mokepon/${jugadorId}/position`,{
+    fetch(`http://192.168.1.140:8080/mokepon/${jugadorId}/position`,{
         method:"POST",
         headers:{
             "Content-Type":"application/json"
