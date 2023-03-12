@@ -334,10 +334,11 @@ function secuenciaAtaque(){ //secuencia de ataques del jugador
     });
 }
 let comodin=true
+let round=1;
 function enviarAtaquesServer(){
     if(comodin){
         // comodin=false
-        fetch(`http://192.168.1.140:8080/mokepon/${jugadorId}/ataques`,{
+        fetch(`http://192.168.1.140:8080/mokepon/${jugadorId}/${round}/ataques`,{
             method:"POST",
             headers:{
                 "Content-Type":"application/json"
@@ -362,7 +363,7 @@ function enviarAtaquesServer(){
 }
 }
 function recibirAtaques(){
-    fetch(`http://192.168.1.140:8080/mokepon/${enemigoId}/ataques`)
+    fetch(`http://192.168.1.140:8080/mokepon/${enemigoId}/${round}/ataques`)
         .then (function(res){ // primero revisamos si la peticion obtuvo respuesta del server
             if(res.ok){ //res viene como una lista que contiene la secuencia de ataques del oponente 
                 res.json() //para leer su respuesta debemos usar then
@@ -523,14 +524,17 @@ function iniciarJuego(){ //para desactivar inicialmente lo que no queremos que s
     unirseAlJuego();
 }
 
+
 function unirseAlJuego(){ //peticion hacia el servidor
     fetch("http://192.168.1.140:8080/unirse") //indicamos a donde se debe conectar (por defecto llama al metodo GET)
         .then(function (res) {            
             if(res.ok) {//si hay datos de respuesta
-                res.text()
-                    .then(function(respuesta){
-                        console.log(respuesta)
-                        jugadorId=respuesta
+                res.json()
+                    .then(function({id,round}){           
+                        jugadorId=id;
+                        round=round
+                       
+                        console.log(jugadorId,round)
                     })
             }
         })
@@ -544,7 +548,7 @@ function reinciar(){
 
 
 function siguienteRonda(){
-
+    round++
     secuenciaAtaqueJug=[];
     secuenciaAtaquePc=[];    
     // extraerAtaquesPc() // se debe llamar porque el split le borra el contenido a la hora de elegir

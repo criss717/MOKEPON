@@ -1,7 +1,7 @@
 // Importamos Express desde la carpeta node_modules
 const express = require('express');
 const cors=require("cors");
-const { Router } = require('express');
+
 
 // Creamos la aplicación de Express
 const app = express();
@@ -49,7 +49,7 @@ class Mokepon {
 
 const jugadores=[]; //guarda los jugadores que se conecten
 
-
+let round;
 app.get('/unirse', (req, res) => {
     const id=`${Math.random()}` //le damos un numero random de identificacion al conectado
 
@@ -59,7 +59,7 @@ app.get('/unirse', (req, res) => {
     
     res.setHeader("Access-Control-Allow-Origin", "*") // para corregir el error de origenes de servidor 
 
-    res.send(id);
+    res.status(200).send({ id, round });;
 });
 
 app.post("/mokepon/:jugadorId", (req,res) => { //para saber que mokepones han elegido todos los jug conectados
@@ -98,9 +98,10 @@ app.post("/mokepon/:jugadorId/position", (req,res) => { // para saber que posici
     }) 
 })
 
-app.post("/mokepon/:jugadorId/ataques", (req,res)=> { // guarda la secuencia elegida por el jug 
+app.post("/mokepon/:jugadorId/:round/ataques", (req,res)=> { // guarda la secuencia elegida por el jug 
     const jugadorId=req.params.jugadorId || ""
     const ataques=req.body.ataquesJug || []
+    const round=req.params.round || 0 
         
     for(e of jugadores){ // revisamos si existe el id del que manda el req
         if(e.id==jugadorId){
@@ -113,7 +114,7 @@ app.post("/mokepon/:jugadorId/ataques", (req,res)=> { // guarda la secuencia ele
         
 })
 
-app.put("/mokepon/:jugadorId/ataques", (req,res)=> { // guarda la secuencia elegida por el jug 
+app.put("/mokepon/:jugadorId/:round/ataques", (req,res)=> { // guarda la secuencia elegida por el jug 
     const jugadorId=req.params.jugadorId || ""
     const ataques=req.body.ataquesJug || []
     console.log("put")
@@ -127,19 +128,22 @@ app.put("/mokepon/:jugadorId/ataques", (req,res)=> { // guarda la secuencia eleg
            
 })
 
-app.get("/mokepon/:jugadorId/ataques", (req,res)=> { // para enviar los ataques elegidos por el enemigo
+app.get("/mokepon/:jugadorId/:round/ataques", (req,res)=> { // para enviar los ataques elegidos por el enemigo
     const enemigoId=req.params.jugadorId || ""
+    const round=req.params.jugadorId || 0
     const enemigo=jugadores.find(jugador=>jugador.id==enemigoId) // buscamos el que tiene el id de nuestro enemigo y lo guardamos en la variable enemigo
-         
+        
     res.send({ // responde con los ataques del jugador enemigo en formato json
         ataques: enemigo.ataques || []
+        
     })
-
+     
     for(e of jugadores){ // revisamos si existe el id del que manda el req
         if(e.id==enemigoId){
             e.borrarAtaques()
         }   
-    }  
+    } 
+     
 })
 
 // app.put("/mokepon/:jugadorId/ataques",(req,res)=>{
