@@ -326,27 +326,41 @@ function secuenciaAtaque(){ //secuencia de ataques del jugador
 
             }
             if(secuenciaAtaqueJug.length==5){
-                console.log("envio")
+                console.log("envio")                
                 enviarAtaquesServer();
                 
-            }  
+            } 
         })
     });
 }
-
+let comodin=true
 function enviarAtaquesServer(){
-    fetch(`http://192.168.1.140:8080/mokepon/${jugadorId}/ataques`,{
-        method:"POST",
-        headers:{
-            "Content-Type":"application/json"
-        },
-        body: JSON.stringify({
-            ataquesJug:secuenciaAtaqueJug
+    if(comodin){
+        // comodin=false
+        fetch(`http://192.168.1.140:8080/mokepon/${jugadorId}/ataques`,{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify({
+                ataquesJug:secuenciaAtaqueJug
+            })
         })
-    })
+        
+    // } else {
+    //     fetch(`http://192.168.1.140:8080/mokepon/${jugadorId}/ataques`,{
+    //         method:"PUT",
+    //         headers:{
+    //             "Content-Type":"application/json"
+    //         },
+    //         body: JSON.stringify({
+    //             ataquesJug:secuenciaAtaqueJug
+    //         })
+    //     })
+    // }
     intervalo=setInterval(recibirAtaques,50) // cada 50 ms revisamos si ya obtuvimos la secuencia de ataques del oponente
 }
-
+}
 function recibirAtaques(){
     fetch(`http://192.168.1.140:8080/mokepon/${enemigoId}/ataques`)
         .then (function(res){ // primero revisamos si la peticion obtuvo respuesta del server
@@ -527,7 +541,10 @@ function reinciar(){
     location.reload();
 }
 
+
+
 function siguienteRonda(){
+
     secuenciaAtaqueJug=[];
     secuenciaAtaquePc=[];    
     // extraerAtaquesPc() // se debe llamar porque el split le borra el contenido a la hora de elegir

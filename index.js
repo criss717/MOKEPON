@@ -1,6 +1,7 @@
 // Importamos Express desde la carpeta node_modules
 const express = require('express');
-const cors=require("cors")
+const cors=require("cors");
+const { Router } = require('express');
 
 // Creamos la aplicación de Express
 const app = express();
@@ -30,6 +31,10 @@ class Jugador {
 
     asignarAtaques(ataques){
         this.ataques=ataques
+    }
+
+    borrarAtaques(){
+        this.ataques=[]
     }
 }
 
@@ -102,8 +107,24 @@ app.post("/mokepon/:jugadorId/ataques", (req,res)=> { // guarda la secuencia ele
             e.asignarAtaques(ataques) // asignamos la secuencia de ataque elejida por el jug
             console.log(e)
         }   
-    }   
+    }  
+    
+    
         
+})
+
+app.put("/mokepon/:jugadorId/ataques", (req,res)=> { // guarda la secuencia elegida por el jug 
+    const jugadorId=req.params.jugadorId || ""
+    const ataques=req.body.ataquesJug || []
+    console.log("put")
+        
+    for(e of jugadores){ // revisamos si existe el id del que manda el req
+        if(e.id==jugadorId){            
+            e.asignarAtaques(ataques) // asignamos la secuencia de ataque elejida por el jug
+            console.log(e)
+        }   
+    }  
+           
 })
 
 app.get("/mokepon/:jugadorId/ataques", (req,res)=> { // para enviar los ataques elegidos por el enemigo
@@ -113,9 +134,30 @@ app.get("/mokepon/:jugadorId/ataques", (req,res)=> { // para enviar los ataques 
     res.send({ // responde con los ataques del jugador enemigo en formato json
         ataques: enemigo.ataques || []
     })
-    // enemigo.ataques=1213 // para reiniciar y que cuando demos a siguiente ronda, este vacío
-       
+
+    for(e of jugadores){ // revisamos si existe el id del que manda el req
+        if(e.id==enemigoId){
+            e.borrarAtaques()
+        }   
+    }  
 })
+
+// app.put("/mokepon/:jugadorId/ataques",(req,res)=>{
+//     const enemigoId=req.params.jugadorId || ""
+//     const ataques=req.body.ataques
+//     const enemigo=jugadores.find(jugador=>jugador.id==enemigoId) // buscamos el que tiene el id de nuestro enemigo y lo guardamos en la variable enemigo
+//     for(e of jugadores){ // revisamos si existe el id del que manda el req
+//         if(e.id==enemigoId){
+//             e.asignarAtaques(ataques) // asignamos la secuencia de ataque elejida por el jug
+//             console.log(e)
+//         }   
+//     } 
+//     res.send({ // responde con los ataques del jugador enemigo en formato json
+//         ataques: enemigo.ataques || []
+//     })
+    
+// })
+
 
 // Activamos el servidor en el puerto 8080
 app.listen(port, () => {
