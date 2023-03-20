@@ -325,10 +325,8 @@ function secuenciaAtaque(){ //secuencia de ataques del jugador
                 boton.disabled=true;
 
             }
-            if(secuenciaAtaqueJug.length==5){
-                console.log("envio")                
-                enviarAtaquesServer();
-                
+            if(secuenciaAtaqueJug.length==5){                            
+                enviarAtaquesServer();                
             } 
         })
     });
@@ -336,7 +334,6 @@ function secuenciaAtaque(){ //secuencia de ataques del jugador
 
 let round=1;
 function enviarAtaquesServer(){
-    
     fetch(`http://192.168.1.140:8080/mokepon/${jugadorId}/${round}/ataques`,{
         method:"POST",
         headers:{
@@ -346,8 +343,8 @@ function enviarAtaquesServer(){
             ataquesJug:secuenciaAtaqueJug
         })
             
-    })
-    intervalo=setInterval(recibirAtaques,50) // cada 50 ms revisamos si ya obtuvimos la secuencia de ataques del oponente
+    })    
+    intervalo=setInterval(recibirAtaques,500) // cada 100 ms revisamos si ya obtuvimos la secuencia de ataques del oponente
 }
 
 function recibirAtaques(){
@@ -359,11 +356,12 @@ function recibirAtaques(){
                         console.log(ataques)
                         if(ataques.length==5){ // hasta que complete la secuecia
                             secuenciaAtaquePc=ataques; // asignamos la lista que el server nos devuelve
-                            combate();                          
-                                              
-                    }
-                })
+                            combate();
+                            siguienteRonda()         
+                        } 
+                    })
             }})
+            
 }
 
 function secuenciaDeAtaquePc(){ //secuencia de ataques aleatorio del PC
@@ -518,11 +516,9 @@ function unirseAlJuego(){ //peticion hacia el servidor
         .then(function (res) {            
             if(res.ok) {//si hay datos de respuesta
                 res.json()
-                    .then(function({id,round}){           
-                        jugadorId=id;
-                        round=round
-                       
-                        console.log(jugadorId,round)
+                    .then(function({id}){           
+                        jugadorId=id;                                           
+                        console.log(jugadorId)
                     })
             }
         })
@@ -533,13 +529,8 @@ function reinciar(){
     location.reload();
 }
 
-
-
 function siguienteRonda(){
-    round++
-    if(round==3){
-        secuenciaAtaque()
-    }
+    round++    
     secuenciaAtaqueJug=[];
     secuenciaAtaquePc=[];    
     // extraerAtaquesPc() // se debe llamar porque el split le borra el contenido a la hora de elegir

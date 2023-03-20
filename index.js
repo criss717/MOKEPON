@@ -50,7 +50,6 @@ class Mokepon {
 
 const jugadores=[]; //guarda los jugadores que se conecten
 
-let round;
 app.get('/unirse', (req, res) => {
     const id=`${Math.random()}` //le damos un numero random de identificacion al conectado
 
@@ -60,7 +59,7 @@ app.get('/unirse', (req, res) => {
     
     res.setHeader("Access-Control-Allow-Origin", "*") // para corregir el error de origenes de servidor 
 
-    res.status(200).send({ id, round });;
+    res.status(200).send({id});;
 });
 
 app.post("/mokepon/:jugadorId", (req,res) => { //para saber que mokepones han elegido todos los jug conectados
@@ -102,35 +101,29 @@ app.post("/mokepon/:jugadorId/position", (req,res) => { // para saber que posici
 app.post("/mokepon/:jugadorId/:round/ataques", (req,res)=> { // guarda la secuencia elegida por el jug 
     const jugadorId=req.params.jugadorId || ""
     const ataques=req.body.ataquesJug || []
-    const round=req.params.round || 0 
+    const round=req.params.round || 1 
         
     for(e of jugadores){ // revisamos si existe el id del que manda el req
         if(e.id==jugadorId){
             e.asignarAtaques(ataques,round) // asignamos la secuencia de ataque elejida por el jug
             console.log(e)
         }   
-    }  
-    
-    
-        
+    }              
 })
 
 app.get("/mokepon/:jugadorId/:round/ataques", (req,res)=> { // para enviar los ataques elegidos por el enemigo
     const enemigoId=req.params.jugadorId || ""
     const round=req.params.round || 1
     const enemigo=jugadores.find(jugador=>jugador.id==enemigoId) // buscamos el que tiene el id de nuestro enemigo y lo guardamos en la variable enemigo
-     
-    res.send({ // responde con los ataques del jugador enemigo en formato json
-        ataques: enemigo.ataques[`ronda${[round]}`] || []
-    })
-     
-   
-    // for(e of jugadores){ // revisamos si existe el id del que manda el req
-    //     if(e.id==enemigoId){
-    //         e.borrarAtaques()
-    //     }   
-    // } 
-     
+    if(enemigo.ataques){
+        res.send({ // responde con los ataques del jugador enemigo en formato json
+            ataques: enemigo.ataques[`ronda${[round]}`] || []
+        })
+    } else {
+        res.send({ // responde con los ataques del jugador enemigo en formato json
+            ataques:[]
+        })
+    }      
 })
 
 // Activamos el servidor en el puerto 8080
