@@ -243,7 +243,7 @@ function selectMokeponPc(mokepon){
 
         spanMokePc.innerHTML=mokeponPc; // modificamos el DOM de la eleccion del pc
         extraerAtaquesJug();
-        extraerAtaquesPc();
+        // extraerAtaquesPc();
         secuenciaAtaque();
     }
 
@@ -265,25 +265,25 @@ function extraerAtaquesJug(){ // para guardar en la variable ataquesJug los ataq
     });
 
     botonesAtaques=document.querySelectorAll(".BDeataque");
-    // cuando hacen click en los botones de ataque
+    
     if(idAtaquesJug.indexOf("boton-fuego")>=0) { // si nuestro mokepon tiene este ataque enntra el If
         botonFuego=document.getElementById("boton-fuego");
-        // botonFuego.addEventListener("click", atackFuego );
+       
     }
 
     if(idAtaquesJug.indexOf("boton-agua")>=0){
         botonAgua=document.getElementById("boton-agua");
-        // botonAgua.addEventListener("click", atackAgua);
+       
     }
 
     if(idAtaquesJug.indexOf("boton-tierra")>=0){
         botonTierra=document.getElementById("boton-tierra");
-        // botonTierra.addEventListener("click",atackTierra );
+        
     }
 
     if(idAtaquesJug.indexOf("boton-rayo")>=0){
         botonRayo=document.getElementById("boton-rayo")
-        // botonRayo.addEventListener("click", atackRayo);
+        
     }
 }
 
@@ -325,15 +325,17 @@ function secuenciaAtaque(){ //secuencia de ataques del jugador
                 boton.disabled=true;
 
             }
-            if(secuenciaAtaqueJug.length==5){                            
-                enviarAtaquesServer();                
+            if(secuenciaAtaqueJug.length==5){              
+                               
+                enviarAtaquesServer();
+                // setTimeout(recibirAtaques,2000)
             } 
         })
     });
 }
 
 let round=1;
-function enviarAtaquesServer(){
+function enviarAtaquesServer(){        
     fetch(`http://192.168.1.140:8080/mokepon/${jugadorId}/${round}/ataques`,{
         method:"POST",
         headers:{
@@ -344,10 +346,14 @@ function enviarAtaquesServer(){
         })
             
     })    
-    intervalo=setInterval(recibirAtaques,500) // cada 100 ms revisamos si ya obtuvimos la secuencia de ataques del oponente
+    .catch(function(error) {
+        console.log('Error en la solicitud: ' + error.message);
+    });
+
+    intervalo=setInterval(recibirAtaques,500) // cada 100 ms revisamos si ya obtuvimos la secuencia de ataques del oponente 
 }
 
-function recibirAtaques(){
+function recibirAtaques(){    
     fetch(`http://192.168.1.140:8080/mokepon/${enemigoId}/${round}/ataques`)
         .then (function(res){ // primero revisamos si la peticion obtuvo respuesta del server
             if(res.ok){ //res viene como una lista que contiene la secuencia de ataques del oponente 
@@ -355,13 +361,35 @@ function recibirAtaques(){
                     .then(function({ataques}){ // //con las llaves directamente es como si hicieramos respuesta.ataques
                         console.log(ataques)
                         if(ataques.length==5){ // hasta que complete la secuecia
-                            secuenciaAtaquePc=ataques; // asignamos la lista que el server nos devuelve
+                            secuenciaAtaquePc=ataques; // asignamos la lista que el server nos devuelve                                                                                                      
                             combate();
-                            siguienteRonda()         
+                            siguienteRonda();                           
                         } 
-                    })
-            }})
+                     })
+            }
+        })
+    
+    .catch(function(error) {
+        console.log('Error en la solicitud: ' + error.message);
+    });
             
+}
+
+function recibirCombate(){
+    fetch(`http://192.168.1.140:8080/mokepon/${enemigoId}/${round}/combate`)
+    .then (function(res){ // primero revisamos si la peticion obtuvo respuesta del server
+        if(res.ok){ //res viene como una lista que contiene la secuencia de ataques del oponente 
+            res.text() //para leer su respuesta debemos usar then
+                .then(function(resultado){ // //con las llaves directamente es como si hicieramos respuesta.ataques
+                    resulParcial=resultado;
+                    crearMsj2()
+                 })
+        }
+    })
+
+.catch(function(error) {
+    console.log('Error en la solicitud: ' + error.message);
+});
 }
 
 function secuenciaDeAtaquePc(){ //secuencia de ataques aleatorio del PC
@@ -532,7 +560,7 @@ function reinciar(){
 function siguienteRonda(){
     round++    
     secuenciaAtaqueJug=[];
-    secuenciaAtaquePc=[];    
+    secuenciaAtaquePc=[];
     // extraerAtaquesPc() // se debe llamar porque el split le borra el contenido a la hora de elegir
     // secuenciaDeAtaquePc(); // el pc vuelve a elegir secuencia
     botonesAtaques.forEach(boton =>{
